@@ -1,0 +1,11 @@
+[project]
+name = "bililive-identity-grabber"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "flet[all]>=0.28.2",
+    "nuitka>=2.7.2",
+    "requests>=2.32.3",
+]

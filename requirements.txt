@@ -1,0 +1,2 @@
+flet[all]>=0.28.2
+requests>=2.32.3
