@@ -61,7 +61,7 @@ def main(page: ft.Page):
     )
 
     welcome_text = ft.Text(
-        value="Bilibili 直播开播及凭据获取工具\nMade by GamerNoTitle\nhttps://github.com/GamerNoTitle/Bililive-Identity-Grabber",
+        value="Bilibili 直播开播及凭据获取工具\nMade by GamerNoTitle\nhttps://github.com/GamerNoTitle/Bililive-Credential-Grabber",
         text_align=ft.TextAlign.CENTER,
         size=16,
         weight=ft.FontWeight.BOLD,
@@ -152,7 +152,7 @@ def main(page: ft.Page):
     # 按钮
     start_button = ft.ElevatedButton(text="开播", width=150, on_click=lambda e: start_live_clicked(e))
     stop_button = ft.ElevatedButton(text="停播", width=150, on_click=lambda e: stop_live_clicked(e), disabled=True)
-    github_button = ft.ElevatedButton(text="GitHub", width=150, on_click=lambda e: page.launch_url("https://github.com/GamerNoTitle/Bililive-Identity-Grabber"))
+    github_button = ft.ElevatedButton(text="GitHub", width=150, on_click=lambda e: page.launch_url("https://github.com/GamerNoTitle/Bililive-Credential-Grabber"))
     button_row = ft.Row(
         controls=[start_button, stop_button, github_button],
         spacing=20,
