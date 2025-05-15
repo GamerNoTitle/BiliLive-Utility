@@ -2,6 +2,12 @@
 
 这是一个帮助不满足 [B 站新规粉丝数量](https://link.bilibili.com/p/eden/news#/newsdetail?id=4516)的用户开启直播并获取直播凭据的小工具
 
+- Telegram 私信: https://t.me/PaffCreamPMBot  
+
+- Telegram 群组: https://t.me/DohnaNyan  
+
+- Telegram 频道: https://t.me/PaffChannel  
+
 > [!warning]
 >
 > 温馨提醒：使用本程序开播后别忘了到网页端更改直播的分区，B 站在没有指定直播分区的情况下会自动选择生活区，这可能不是你想要的，所以一定一定一定要记得改掉！！！
