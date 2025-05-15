@@ -61,3 +61,8 @@ $ pip install -r requirements.txt
 ## 赞助
 
 https://bili33.top/sponsors
+
+
+## 碎碎念
+
+实在是不会做 UI 了，直接用 flet 了（其实是我懒得弄网页控制台了，感觉不是很有必要，又不想用 tkinter）
