@@ -20,13 +20,15 @@ if ($LASTEXITCODE -eq 0) {
     exit 1
 }
 
-# 构建 GUI 版本 (使用 flet build)
+# 构建 GUI 版本 (使用 flet build，并明确指定入口文件)
 Write-Host "Building GUI with Flet..."
-uv run flet build windows gui.py --output=gui.build
+# 尝试使用位置参数指定入口文件
+uv run flet build windows gui.py --output gui.build > flet_build.log 2>&1
 if ($LASTEXITCODE -eq 0) {
     Write-Host "GUI build successful! Output in gui.build folder."
 } else {
-    Write-Error "GUI build failed!"
+    Write-Error "GUI build failed! Check flet_build.log for details."
+    Get-Content -Path flet_build.log -ErrorAction SilentlyContinue
     exit 1
 }
 
