@@ -2,6 +2,10 @@
 
 这是一个帮助不满足 [B 站新规粉丝数量](https://link.bilibili.com/p/eden/news#/newsdetail?id=4516)的用户开启直播并获取直播凭据的小工具
 
+> [!warning]
+>
+> 温馨提醒：使用本程序开播后别忘了到网页端更改直播的分区，B 站在没有指定直播分区的情况下会自动选择生活区，这可能不是你想要的，所以一定一定一定要记得改掉！！！
+
 ## 开箱即用
 
 ### 下载程序
@@ -29,6 +33,10 @@
 ![](https://cdn.jsdelivr.net/gh/GamerNoTitle/Bililive-Credential-Grabber@master/img/flet_N6tYCAz1z0.png)
 
 此时弹出来的地址和密钥就是你的直播凭据，你就可以丢到 OBS 里面愉快地开播了！
+
+> [!warning]
+>
+> 别忘了到网页端更改直播的分区，B 站在没有指定直播分区的情况下会自动选择生活区，这可能不是你想要的，所以一定一定一定要记得改掉！！！
 
 ## 源码启动
 
