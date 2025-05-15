@@ -1,4 +1,4 @@
-# Bililive-Identity-Grabber
+# Bililive-Credential-Grabber
 
 这是一个帮助不满足 [B 站新规粉丝数量](https://link.bilibili.com/p/eden/news#/newsdetail?id=4516)的用户开启直播并获取直播凭据的小工具
 
