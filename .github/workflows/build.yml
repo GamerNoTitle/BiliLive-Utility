@@ -46,7 +46,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: gui.build
-        path: gui.build/*
+        path: build/windows
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4

@@ -10,25 +10,25 @@ if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
 # 设置 UTF-8 编码以避免 Unicode 错误
 $env:PYTHONUTF8 = 1
 
-# 构建控制台版本 (使用 nuitka 构建 console.py)
+# 构建 GUI 版本
+Write-Host "Building GUI with Flet..."
+# 尝试使用位置参数指定入口文件
+uv run flet build windows --module-name gui > flet_build.log 2>&1
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "GUI build successful! Output in gui.build folder."
+} else {
+    Write-Error "GUI build failed! Check flet_build.log for details."
+    Get-Content -Path flet_build.log -ErrorAction SilentlyContinue
+    exit 1
+}
+
+# 构建控制台版本
 Write-Host "Building console executable with Nuitka..."
 uv run nuitka --standalone --assume-yes-for-downloads --onefile --windows-icon-from-ico=icon.ico .\console.py
 if ($LASTEXITCODE -eq 0) {
     Write-Host "Console build successful! Output as console.exe"
 } else {
     Write-Error "Console build failed!"
-    exit 1
-}
-
-# 构建 GUI 版本 (使用 flet build，并明确指定入口文件)
-Write-Host "Building GUI with Flet..."
-# 尝试使用位置参数指定入口文件
-uv run flet build windows gui.py --output gui.build > flet_build.log 2>&1
-if ($LASTEXITCODE -eq 0) {
-    Write-Host "GUI build successful! Output in gui.build folder."
-} else {
-    Write-Error "GUI build failed! Check flet_build.log for details."
-    Get-Content -Path flet_build.log -ErrorAction SilentlyContinue
     exit 1
 }
 
