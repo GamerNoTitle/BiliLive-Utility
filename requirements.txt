@@ -1,2 +1,4 @@
 flet[all]>=0.28.2
 requests>=2.32.3
+qrcode>=7.4.2
+pillow>=11.2.1
