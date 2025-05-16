@@ -19,11 +19,23 @@
 
 ## 开箱即用
 
-### 下载程序
+### 下载及程序
 
-访问 https://github.com/GamerNoTitle/BiliLive-Utility/releases 下载最新的发行版，
+访问 https://github.com/GamerNoTitle/BiliLive-Utility/releases 下载最新的发行版，解压后打开里面的 `bililive_utility.exe`
 
-### 获取登录凭据
+### 登录账号
+
+#### 直接通过程序扫码登录
+
+点击程序上方的扫码登录按钮
+
+![](https://cdn.jsdelivr.net/gh/GamerNoTitle/BiliLive-Utility@master/img/flet_8DcdYSacJo.png)
+
+扫码登录即可，登录后会自己弹回去主页面
+
+![](https://cdn.jsdelivr.net/gh/GamerNoTitle/BiliLive-Utility@master/img/flet_IWbvYqI8pF.png)
+
+#### 通过浏览器获取
 
 访问 B 站的直播页面 [https://link.bilibili.com/p/center/index#/my-room/start-live](https://link.bilibili.com/p/center/index#/my-room/start-live)，完成登录后，按下键盘上的 <kbd>F12</kbd>，然后点击上方的 `网络/Network`，并搜索 `get_user_info`，然后在左边找到任意一条 `get_user_info`（尽量往下找），然后点击它，在右手边往下滑找到 Cookies，复制内容，保留下来，待会要用
 
@@ -33,17 +45,27 @@
 
 ![](https://cdn.jsdelivr.net/gh/GamerNoTitle/BiliLive-Utility@master/img/msedge_YAPXAUPOxR.png)
 
-### 使用程序开播/获取推流码
-
-打开下载的 zip，解压后得到程序，直接打开，在对应的位置输入内容后，点击开播即可
-
-![](https://cdn.jsdelivr.net/gh/GamerNoTitle/BiliLive-Utility@master/img/flet_N6tYCAz1z0.png)
-
 此时弹出来的地址和密钥就是你的直播凭据，你就可以丢到 OBS 里面愉快地开播了！
 
-> [!warning]
+### 获取及修改直播间信息
+
+点击 `获取直播间数据` 按钮即可获取直播间的数据
+
+![](https://cdn.jsdelivr.net/gh/GamerNoTitle/BiliLive-Utility@master/img/flet_wVrvhcRL4X.png)
+
+此时，需要对什么修改直接改框框里面的内容后，点击右侧的 `更新` 按钮即可
+
+### 开启/关闭直播
+
+> [!Warning]
 >
-> 别忘了到网页端更改直播的分区，B 站在没有指定直播分区的情况下会自动选择生活区，这可能不是你想要的，所以一定一定一定要记得改掉！！！
+> 在开播之前，一定一定一定要获取一次直播间信息，否则程序将不知道在哪个分区开播！！！
+
+在上方凭据（直播间号、Cookie）输入正确的前提下，往下滑，找到 `开播` 按钮，点击即可，此时程序会展示你的直播凭据，你可以将它们丢到 OBS 里面使用
+
+![](https://cdn.jsdelivr.net/gh/GamerNoTitle/BiliLive-Utility@master/img/flet_6xZFtkOBx2.png)
+
+关闭直播同理，直接点击下方的 `停播` 按钮即可
 
 ## 源码启动
 
@@ -71,7 +93,13 @@ $ .venv\Scripts\activate
 $ pip install -r requirements.txt
 ```
 
-然后直接运行 `python gui.py` 即可
+然后直接运行
+
+```shell
+$ flet run
+```
+
+此时就会打开本程序了
 
 ## 赞助
 
