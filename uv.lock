@@ -44,11 +44,12 @@ wheels = [
 ]
 
 [[package]]
-name = "bililiveidentitygrabber"
-version = "0.1.0"
+name = "bililive-utility"
+version = "1.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "flet" },
+    { name = "requests" },
 ]
 
 [package.dev-dependencies]
@@ -57,7 +58,10 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "flet", specifier = "==0.28.2" }]
+requires-dist = [
+    { name = "flet", specifier = "==0.28.2" },
+    { name = "requests", specifier = ">=2.32.3" },
+]
 
 [package.metadata.requires-dev]
 dev = [{ name = "flet", extras = ["all"], specifier = "==0.28.2" }]
