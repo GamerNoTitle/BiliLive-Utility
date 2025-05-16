@@ -28,9 +28,6 @@ $companyName = "GamerNoTitle"
 $copyrightInfo = "Copyright (C) 2025 GamerNoTitle"
 $description = "Bililibe Utility is a tool that helps you turn on livestream without using Livehime and get the credential for livestream which is valid in OBS Studio."
 
-# 构建控制台版本
-Write-Host "Building console executable with Nuitka..."
-
 # 使用 flet build 命令
 uv run flet build windows --project "$projectName" --product "$productName" --company "$companyName" --copyright "$copyrightInfo" --description "$description" --cleanup-app --cleanup-packages > flet_build.log 2>&1
 if ($LASTEXITCODE -eq 0) {
