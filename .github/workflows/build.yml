@@ -12,6 +12,7 @@ jobs:
     env:
       PYTHONUTF8: 1
       PYTHONIOENCODING: utf-8
+      POWERSHELL_TELEMETRY_OPTOUT: 1
 
     steps:
     - name: Checkout code

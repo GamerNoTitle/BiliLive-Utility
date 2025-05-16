@@ -1,4 +1,3 @@
-# build.ps1
 Write-Host "Starting build process..."
 
 # 确保 Python 环境已设置
@@ -14,20 +13,27 @@ $env:PYTHONIOENCODING = "utf-8"
 # 设置 PowerShell 的输出编码为 UTF-8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 [Console]::InputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
+
+# 调试编码信息
+Write-Host "Current Output Encoding: $([Console]::OutputEncoding)"
+Write-Host "Current Input Encoding: $([Console]::InputEncoding)"
 
 # 构建 GUI 版本
 Write-Host "Building GUI with Flet..."
-# 定义中文参数
+# 定义参数，暂时避免中文
 $projectName = "Bililive-Credential-Grabber"
-$productName = "B站快速开播及推流码获取工具"
+$productName = "Bililive Credential Grabber"
 $companyName = "GamerNoTitle"
 $copyrightInfo = "Copyright (C) 2025 GamerNoTitle"
 $description = "Bililibe-Credential-Grabber is a tool that helps you turn on livestream without using Livehime and get the credential for livestream which is valid in OBS Studio."
 
 # 构建控制台版本
 Write-Host "Building console executable with Nuitka..."
-# 定义中文参数
-$consoleProductName = "B站快速开播及推流码获取工具"
+$consoleProductName = "Bililive Credential Grabber"
+
+# 调试中文参数
+Write-Host "Testing Console Product Name: $consoleProductName"
 
 uv run nuitka --standalone --assume-yes-for-downloads --onefile --windows-icon-from-ico=img\icon.ico --windows-company-name="$companyName" --windows-product-name="$consoleProductName" --windows-file-version=1.0.0.0 --windows-product-version=1.0.0.0 .\console.py
 if ($LASTEXITCODE -eq 0) {
