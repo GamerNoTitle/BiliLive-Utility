@@ -53,6 +53,10 @@ def save_log_to_file(log_content, level="INFO"):
     with open(log_file, "a", encoding="utf-8") as f:
         f.write(f"[{timestamp}] [{level}] {log_content}\n")
         f.write("-" * 50 + "\n")
+        
+    with open(f"{log_dir}/latest.log", "a", encoding="utf-8") as f:
+        f.write(f"[{timestamp}] [{level}] {log_content}\n")
+        f.write("-" * 50 + "\n")
 
 def save_config_to_file(roomid, cookie_string):
     """将配置保存到 config.json 文件中"""

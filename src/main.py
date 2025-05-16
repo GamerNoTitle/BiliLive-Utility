@@ -1,4 +1,5 @@
 import flet as ft
+import os
 from home import get_main_content
 from login import get_qr_login_content
 
@@ -60,4 +61,7 @@ def app_main(page: ft.Page):
     route_change(page.route)
 
 if __name__ == "__main__":
+    os.makedirs("logs", exist_ok=True)
+    with open("logs/latest.log", "w") as f:
+        f.close()
     ft.app(target=app_main)
