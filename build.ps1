@@ -28,7 +28,7 @@ if ($LASTEXITCODE -eq 0) {
 
 # 构建控制台版本
 Write-Host "Building console executable with Nuitka..."
-uv run nuitka --standalone --assume-yes-for-downloads --onefile --windows-icon-from-ico=img\icon.ico .\console.py
+uv run nuitka --standalone --assume-yes-for-downloads --onefile --windows-icon-from-ico=img\icon.ico --windows-company-name=GamerNoTitle --windows-product-name="B站快速开播及推流码获取工具" .\console.py
 if ($LASTEXITCODE -eq 0) {
     Write-Host "Console build successful! Output as console.exe"
 } else {
