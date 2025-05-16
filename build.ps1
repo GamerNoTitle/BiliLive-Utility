@@ -1,6 +1,9 @@
 # build.ps1
 Write-Host "Starting build process..."
 
+# 设置编码为 UTF-8
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
 # 确保 Python 环境已设置
 if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
     Write-Error "Python not found! Please ensure Python is installed."
