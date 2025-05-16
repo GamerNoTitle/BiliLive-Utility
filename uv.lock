@@ -45,11 +45,12 @@ wheels = [
 
 [[package]]
 name = "bililive-utility"
-version = "1.1.0"
+version = "1.2.0"
 source = { virtual = "." }
 dependencies = [
     { name = "flet" },
     { name = "pillow" },
+    { name = "qrcode" },
     { name = "requests" },
 ]
 
@@ -62,6 +63,7 @@ dev = [
 requires-dist = [
     { name = "flet", specifier = "==0.28.2" },
     { name = "pillow", specifier = ">=11.2.1" },
+    { name = "qrcode", specifier = ">=7.4.2" },
     { name = "requests", specifier = ">=2.32.3" },
 ]
 
