@@ -24,16 +24,6 @@ $companyName = "GamerNoTitle"
 $copyrightInfo = "Copyright (C) 2025 GamerNoTitle"
 $description = "Bililibe-Credential-Grabber is a tool that helps you turn on livestream without using Livehime and get the credential for livestream which is valid in OBS Studio."
 
-# 使用 flet build 命令
-uv run flet build windows --project "$projectName" --product "$productName" --company "$companyName" --copyright "$copyrightInfo" --description "$description" --cleanup-app --cleanup-packages > flet_build.log 2>&1
-if ($LASTEXITCODE -eq 0) {
-    Write-Host "GUI build successful! Output in gui.build folder."
-} else {
-    Write-Error "GUI build failed! Check flet_build.log for details."
-    Get-Content -Path flet_build.log -ErrorAction SilentlyContinue
-    exit 1
-}
-
 # 构建控制台版本
 Write-Host "Building console executable with Nuitka..."
 # 定义中文参数
@@ -44,6 +34,16 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "Console build successful! Output as console.exe"
 } else {
     Write-Error "Console build failed!"
+    exit 1
+}
+
+# 使用 flet build 命令
+uv run flet build windows --project "$projectName" --product "$productName" --company "$companyName" --copyright "$copyrightInfo" --description "$description" --cleanup-app --cleanup-packages > flet_build.log 2>&1
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "GUI build successful! Output in gui.build folder."
+} else {
+    Write-Error "GUI build failed! Check flet_build.log for details."
+    Get-Content -Path flet_build.log -ErrorAction SilentlyContinue
     exit 1
 }
 
