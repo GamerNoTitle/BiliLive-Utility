@@ -41,14 +41,15 @@ def app_main(page: ft.Page):
             page.views.append(
                 ft.View(
                     route="/main",
-                    controls=[get_main_content(page)]
+                    controls=[get_main_content(page)],
+                    scroll=ft.ScrollMode.AUTO
                 )
             )
         elif page.route == "/qr-login":
             page.views.append(
                 ft.View(
                     route="/qr-login",
-                    controls=[get_qr_login_content(page)]
+                    controls=[get_qr_login_content(page)],
                 )
             )
         page.update()

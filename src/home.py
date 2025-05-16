@@ -920,6 +920,8 @@ def get_main_content(page: ft.Page):
 
     # 主页面内容
     main_content = ft.Column(
+        scroll=ft.ScrollMode.AUTO,  # 启用列滚动
+        expand=True,  # 允许列扩展填满可用空间
         controls=[
             welcome_text,
             result_text,
