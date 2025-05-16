@@ -30,10 +30,7 @@ $description = "Bililibe Utility is a tool that helps you turn on livestream wit
 
 # 构建控制台版本
 Write-Host "Building console executable with Nuitka..."
-$consoleProductName = "Bililive Credential Grabber"
 
-# 调试中文参数
-Write-Host "Testing Console Product Name: $consoleProductName"
 # 使用 flet build 命令
 uv run flet build windows --project "$projectName" --product "$productName" --company "$companyName" --copyright "$copyrightInfo" --description "$description" --cleanup-app --cleanup-packages > flet_build.log 2>&1
 if ($LASTEXITCODE -eq 0) {
