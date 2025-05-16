@@ -9,11 +9,12 @@ if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
 
 # 设置 UTF-8 编码以避免 Unicode 错误
 $env:PYTHONUTF8 = 1
+$pwd = Get-Location
 
 # 构建 GUI 版本
 Write-Host "Building GUI with Flet..."
 # 尝试使用位置参数指定入口文件
-uv run flet build windows --module-name gui > flet_build.log 2>&1
+uv run flet build windows > flet_build.log 2>&1
 if ($LASTEXITCODE -eq 0) {
     Write-Host "GUI build successful! Output in gui.build folder."
 } else {

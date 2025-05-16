@@ -39,8 +39,8 @@ wheels = [
 ]
 
 [[package]]
-name = "bililive-identity-grabber"
-version = "0.1.0"
+name = "bililive-credential-grabber"
+version = "1.0.0"
 source = { virtual = "." }
 dependencies = [
     { name = "flet", extra = ["all"] },

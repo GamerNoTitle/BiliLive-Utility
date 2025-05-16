@@ -9,3 +9,10 @@ dependencies = [
     "nuitka>=2.7.2",
     "requests>=2.32.3",
 ]
+
+[tool.flet]
+app.module = "gui"
+
+[tool.flet.app.boot_screen]
+show = true
+message = "应用启动中，请稍候……"
