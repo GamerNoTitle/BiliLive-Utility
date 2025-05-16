@@ -9,6 +9,7 @@ authors = [
 ]
 dependencies = [
   "flet==0.28.2",
+  "pillow>=11.2.1",
   "requests>=2.32.3",
 ]
 
