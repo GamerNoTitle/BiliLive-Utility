@@ -1,9 +1,6 @@
 # build.ps1
 Write-Host "Starting build process..."
 
-# 设置编码为 UTF-8
-[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-
 # 确保 Python 环境已设置
 if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
     Write-Error "Python not found! Please ensure Python is installed."
@@ -11,8 +8,12 @@ if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
 }
 
 # 设置 UTF-8 编码以避免 Unicode 错误
+# 设置 UTF-8 编码以避免 Unicode 错误
 $env:PYTHONUTF8 = 1
-$pwd = Get-Location
+$env:PYTHONIOENCODING = "utf-8"
+
+# 设置 PowerShell 的输出编码为 UTF-8
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 # 构建 GUI 版本
 Write-Host "Building GUI with Flet..."
