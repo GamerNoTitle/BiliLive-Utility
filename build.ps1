@@ -22,11 +22,11 @@ Write-Host "Current Input Encoding: $([Console]::InputEncoding)"
 # 构建 GUI 版本
 Write-Host "Building GUI with Flet..."
 # 定义参数，暂时避免中文
-$projectName = "Bililive-Credential-Grabber"
-$productName = "Bililive Credential Grabber"
+$projectName = "BiliLive-Utility"
+$productName = "Bililive Utility"
 $companyName = "GamerNoTitle"
 $copyrightInfo = "Copyright (C) 2025 GamerNoTitle"
-$description = "Bililibe-Credential-Grabber is a tool that helps you turn on livestream without using Livehime and get the credential for livestream which is valid in OBS Studio."
+$description = "Bililibe Utility is a tool that helps you turn on livestream without using Livehime and get the credential for livestream which is valid in OBS Studio."
 
 # 构建控制台版本
 Write-Host "Building console executable with Nuitka..."
@@ -34,15 +34,6 @@ $consoleProductName = "Bililive Credential Grabber"
 
 # 调试中文参数
 Write-Host "Testing Console Product Name: $consoleProductName"
-
-uv run nuitka --standalone --assume-yes-for-downloads --onefile --windows-icon-from-ico=img\icon.ico --windows-company-name="$companyName" --windows-product-name="$consoleProductName" --windows-file-version=1.0.0.0 --windows-product-version=1.0.0.0 .\console.py
-if ($LASTEXITCODE -eq 0) {
-    Write-Host "Console build successful! Output as console.exe"
-} else {
-    Write-Error "Console build failed!"
-    exit 1
-}
-
 # 使用 flet build 命令
 uv run flet build windows --project "$projectName" --product "$productName" --company "$companyName" --copyright "$copyrightInfo" --description "$description" --cleanup-app --cleanup-packages > flet_build.log 2>&1
 if ($LASTEXITCODE -eq 0) {

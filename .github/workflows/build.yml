@@ -46,14 +46,13 @@ jobs:
         }
       shell: powershell
 
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: gui.build
-        path: build/windows
+    - name: Get version from pyproject.toml
+      run: |
+        $version = (Get-Content pyproject.toml | Select-String -Pattern 'version = "([^"]+)"').Matches.Groups[1].Value
+        Write-Host "VERSION=$version" >> $GITHUB_ENV
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: console.build
-        path: console.exe
+        name: BiliLive-Utility-$env:VERSION
+        path: build/windows

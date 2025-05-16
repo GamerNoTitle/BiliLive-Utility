@@ -1,18 +1,41 @@
 [project]
-name = "bililive-credential-grabber"
-version = "1.0.0"
-description = "Add your description here"
+name = "bililive-utility"
+version = "1.1.0"
+description = ""
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.9"
+authors = [
+    { name = "GamerNoTitle", email = "GamerNoTitle@outlook.com" }
+]
 dependencies = [
-    "flet[all]>=0.28.2",
-    "nuitka>=2.7.2",
-    "requests>=2.32.3",
+  "flet==0.28.2"
 ]
 
 [tool.flet]
-app.module = "gui"
+# org name in reverse domain name notation, e.g. "com.mycompany".
+# Combined with project.name to build bundle ID for iOS and Android apps
+org = "com.gamernotitle"
 
-[tool.flet.app.boot_screen]
-show = true
-message = "应用启动中，请稍候……"
+# project display name that is used as an app title on Android and iOS home screens,
+# shown in window titles and about app dialogs on desktop.
+product = "bililive-utility"
+
+# company name to display in about app dialogs
+company = "Flet"
+
+# copyright text to display in about app dialogs
+copyright = "Copyright (C) 2025 by GamerNoTitle"
+
+[tool.flet.app]
+path = "src"
+
+[tool.uv]
+dev-dependencies = [
+    "flet[all]==0.28.2",
+]
+
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.group.dev.dependencies]
+flet = {extras = ["all"], version = "0.28.2"}
