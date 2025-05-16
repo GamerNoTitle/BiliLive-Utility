@@ -607,6 +607,10 @@ def get_main_content(page: ft.Page):
 
     # 开播按钮点击
     def start_live_clicked(e):
+        if prev_tags == [] or prev_title == "":
+            result_text.value = "❌ 你必须先获取你的直播间信息后才能开播！"
+            save_log_to_file("用户在开播前未获取直播间信息", level="ERROR")
+            return 
         result_text.value = ""
         stream_addr_input.value = ""
         stream_code_input.value = ""
