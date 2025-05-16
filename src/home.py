@@ -547,11 +547,24 @@ def get_main_content(page: ft.Page):
             result_text.value = "❌ 推流密钥为空，无法复制！"
         page.update()
 
+    def handle_code_focus(e):
+        """聚焦时显示明文"""
+        stream_code_input.password = False
+        page.update()
+    
+    def handle_code_blur(e):
+        """失去焦点时重新隐藏"""
+        stream_code_input.password = True
+        page.update()
+
     stream_code_input = ft.TextField(
         label="推流密钥",
         width=1000,
         read_only=True,
         hint_text="请先开播，开播成功后会展示密钥的 🤔",
+        on_focus=lambda e: handle_code_focus(e),
+        on_blur=lambda e: handle_code_blur(e),
+        password=True,
     )
     copy_code_button = ft.ElevatedButton(
         text="复制", width=100, on_click=copy_code_to_clipboard
