@@ -21,7 +21,6 @@ Write-Host "Current Input Encoding: $([Console]::InputEncoding)"
 
 # 构建 GUI 版本
 Write-Host "Building GUI with Flet..."
-# 定义参数，暂时避免中文
 $projectName = "BiliLive-Utility"
 $productName = "Bililive Utility"
 $companyName = "GamerNoTitle"

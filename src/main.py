@@ -1,7 +1,20 @@
 import flet as ft
 import os
+import sys
 from home import get_main_content
 from login import get_qr_login_content
+
+# 强制设置 UTF-8 编码
+if sys.version_info >= (3, 7):
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
+else:
+    sys.stdout = open(sys.stdout.fileno(), mode='w', encoding='utf-8', buffering=1)
+    sys.stderr = open(sys.stderr.fileno(), mode='w', encoding='utf-8', buffering=1)
+
+# 确保文件系统编码支持中文路径
+if 'PYTHONUTF8' not in os.environ:
+    os.environ['PYTHONUTF8'] = '1'
 
 def app_main(page: ft.Page):
     # 设置页面基本属性
