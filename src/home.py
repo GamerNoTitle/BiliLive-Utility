@@ -585,6 +585,12 @@ def get_main_content(page: ft.Page):
     # 操作结果显示区域
     result_text = ft.Text(value="欢迎使用 BiliLive Utility 工具箱！本程序的所有提示会在这里显示 =w=\n如果本工具显示不全的话，可以把本工具的窗口拉大来，或者滚动浏览使用。", size=18, text_align=ft.TextAlign.CENTER, width=1000)
 
+    # 免责声明
+    disclaimer_text = ft.Text(
+        value="本项目仅供个人学习、研究和非商业性用途。用户在使用本工具时，需自行确保遵守相关法律法规，特别是与版权相关的法律条款。开发者不对因使用本工具而产生的任何版权纠纷或法律责任承担责任。请用户在使用时谨慎，确保其行为合法合规，并仅在有合法授权的情况下使用相关内容。",
+        size=12, text_align=ft.TextAlign.CENTER, width=1000,
+    )
+
     # 按钮
     start_button = ft.ElevatedButton(
         text="开播", width=150, on_click=lambda e: start_live_clicked(e)
@@ -949,6 +955,7 @@ def get_main_content(page: ft.Page):
         expand=True,  # 允许列扩展填满可用空间
         controls=[
             welcome_text,
+            disclaimer_text,
             result_text,
             ft.Divider(height=20),
             input_row,
@@ -964,7 +971,7 @@ def get_main_content(page: ft.Page):
             checkbox_row,
             ft.Divider(height=20),
             button_row,
-            ft.Text(value="========== 别拖啦，已经到底啦 ==========", size=14, text_align=ft.TextAlign.CENTER),
+            ft.Text(value="本程序基于 AGPL-3.0 许可证发布。使用本程序的风险由使用者自行承担。作者不对因使用本程序导致的任何后果承担责任。\n本程序仅在 GitHub 上分发：https://github.com/GamerNoTitle/BiliLive-Utility。\n如果您在其他平台发现本程序，请注意谨防盗号以及受骗。作者不会为其他平台上的程序提供任何支持。", size=12, text_align=ft.TextAlign.CENTER, selectable=True),
             ft.Divider(height=20),
         ],
         alignment=ft.MainAxisAlignment.CENTER,
