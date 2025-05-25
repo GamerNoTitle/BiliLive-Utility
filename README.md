@@ -28,6 +28,10 @@
 
 访问 https://github.com/GamerNoTitle/BiliLive-Utility/releases 下载最新的发行版，解压后打开里面的 `bililive_utility.exe`
 
+> [!warning]
+>
+> 程序无法在有中文路径的目录下运行，已知这是 UI 库 flet 的问题，不是本程序的问题，暂时无法解决，请放在一个没有中文的路径下运行本程序！
+
 ### 登录账号
 
 #### 直接通过程序扫码登录
