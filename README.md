@@ -8,12 +8,6 @@
 > [!important]
 > 本项目仅供个人学习、研究和非商业性用途。用户在使用本工具时，需自行确保遵守相关法律法规，特别是与版权相关的法律条款。开发者不对因使用本工具而产生的任何版权纠纷或法律责任承担责任。请用户在使用时谨慎，确保其行为合法合规，并仅在有合法授权的情况下使用相关内容。
 
-> [!warning]
->
-> 开发者也有自己的私生活，请你不要添加除了 Telegram 以外的开发者的联系方式。你可以通过[开一个 Github Issue](https://github.com/GamerNoTitle/BiliLive-Utility/issues/new) 或者使用 [Telegram Bot](https://t.me/PaffCreamPMBot) 来向开发者询问有关本软件的事情。
->
-> 但请你千万记住，在使用本工具时，需自行确保遵守相关法律法规，特别是与版权相关的法律条款。开发者不对因使用本工具而产生的任何版权纠纷或法律责任承担责任。并且开发者没有义务帮助你解决你的问题，如果开发者没有在 Github Issue 或者 Telegram 聊天中帮你解决问题，请你也不要炎上开发者，这是最基本的尊重，谢谢各位。
-
 这是一个帮助不满足 [B 站新规粉丝数量](https://link.bilibili.com/p/eden/news#/newsdetail?id=4516)的用户开启直播并获取直播凭据的小工具
 
 - Telegram 私信: https://t.me/PaffCreamPMBot  
