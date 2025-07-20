@@ -45,7 +45,7 @@ wheels = [
 
 [[package]]
 name = "bililive-utility"
-version = "1.2.0"
+version = "1.4.0"
 source = { virtual = "." }
 dependencies = [
     { name = "flet", extra = ["all"] },

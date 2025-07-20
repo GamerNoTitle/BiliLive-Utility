@@ -4,6 +4,8 @@ import os
 import json
 from datetime import datetime
 import time
+import urllib.parse
+import hashlib
 
 HEADERS = {
     "accept": "application/json, text/plain, */*",
@@ -16,6 +18,19 @@ HEADERS = {
 areas = {}
 prev_tags = []
 prev_title = ""
+
+# https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/misc/sign/APP.md
+APPKEY = "aae92bc66f3edfab"
+APPSEC = "af125a0d5279fd576c1b4418a3e8276d"
+
+def get_sign(params, appkey=APPKEY, appsec=APPSEC):
+    """为请求参数进行 APP 签名"""
+    params.update({'appkey': appkey})
+    params = dict(sorted(params.items())) # 按照 key 重排参数
+    query = urllib.parse.urlencode(params) # 序列化参数
+    sign = hashlib.md5((query+appsec).encode()).hexdigest() # 计算 api 签名
+    return sign
+
 
 def parse_cookie_string(cookie_string):
     """将 Cookie 字符串解析为字典形式"""
@@ -30,6 +45,7 @@ def parse_cookie_string(cookie_string):
             cookie_dict[key.strip()] = value.strip()
     return cookie_dict
 
+
 def save_stream_info(roomid, addr, code):
     """将推流信息保存到文件"""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -40,6 +56,7 @@ def save_stream_info(roomid, addr, code):
         f.write(f"推流密钥: {code}\n")
         f.write(f"生成时间: {timestamp}\n")
     return filename
+
 
 def save_log_to_file(log_content, level="INFO"):
     """将日志保存到 logs/gui.log 文件中，如果文件夹不存在则创建，并根据级别保存到不同文件"""
@@ -53,10 +70,11 @@ def save_log_to_file(log_content, level="INFO"):
     with open(log_file, "a", encoding="utf-8") as f:
         f.write(f"[{timestamp}] [{level}] {log_content}\n")
         f.write("-" * 50 + "\n")
-        
+
     with open(f"{log_dir}/latest.log", "a", encoding="utf-8") as f:
         f.write(f"[{timestamp}] [{level}] {log_content}\n")
         f.write("-" * 50 + "\n")
+
 
 def save_config_to_file(roomid, cookie_string):
     """将配置保存到 config.json 文件中"""
@@ -65,6 +83,7 @@ def save_config_to_file(roomid, cookie_string):
         json.dump(config, f, ensure_ascii=False, indent=4)
     save_log_to_file(f"配置已保存到 config.json 文件中", level="INFO")
 
+
 def get_user_room_id(mid, cookies_string):
     """通过用户 ID 获取直播间 ID"""
     try:
@@ -72,30 +91,46 @@ def get_user_room_id(mid, cookies_string):
             "https://api.live.bilibili.com/room/v1/Room/getRoomInfoOld",
             params={"mid": mid},
             headers=HEADERS,
-            cookies=parse_cookie_string(cookies_string)
+            cookies=parse_cookie_string(cookies_string),
         )
         if resp.status_code == 200:
             data = resp.json()
-            save_log_to_file(f"获取直播间信息响应: {json.dumps(data, ensure_ascii=False)}", level="DEBUG")
+            save_log_to_file(
+                f"获取直播间信息响应: {json.dumps(data, ensure_ascii=False)}",
+                level="DEBUG",
+            )
             if data.get("code") == 0:
                 room_id = data.get("data", {}).get("roomid", 0)
                 if room_id:
                     save_log_to_file(f"成功获取直播间 ID: {room_id}", level="INFO")
                     with open("config.json", "w") as f:
-                        f.write(json.dumps({"roomid": room_id, "cookies": cookies_string}, ensure_ascii=False, indent=4))
+                        f.write(
+                            json.dumps(
+                                {"roomid": room_id, "cookies": cookies_string},
+                                ensure_ascii=False,
+                                indent=4,
+                            )
+                        )
                     return str(room_id)
                 else:
                     save_log_to_file("未找到直播间 ID", level="ERROR")
                     return ""
             else:
-                save_log_to_file(f"获取直播间信息失败: {data.get('message', '未知错误')}", level="ERROR")
+                save_log_to_file(
+                    f"获取直播间信息失败: {data.get('message', '未知错误')}",
+                    level="ERROR",
+                )
                 return ""
         else:
-            save_log_to_file(f"获取直播间信息失败，状态码: {resp.status_code}, 响应: {resp.text}", level="ERROR")
+            save_log_to_file(
+                f"获取直播间信息失败，状态码: {resp.status_code}, 响应: {resp.text}",
+                level="ERROR",
+            )
             return ""
     except Exception as e:
         save_log_to_file(f"获取直播间 ID 时发生错误: {str(e)}", level="ERROR")
         return ""
+
 
 def get_main_content(page: ft.Page):
     try:
@@ -165,7 +200,11 @@ def get_main_content(page: ft.Page):
             save_log_to_file(f"直播间标题 {title} 长度超过 41 个字符", level="ERROR")
             page.update()
             return
-        data = {"room_id": roomid_input.value.strip(), "title": title, "csrf": parse_cookie_string(cookie_string=cookies_string).get("bili_jct")}
+        data = {
+            "room_id": roomid_input.value.strip(),
+            "title": title,
+            "csrf": parse_cookie_string(cookie_string=cookies_string).get("bili_jct"),
+        }
         resp = requests.post(
             "https://api.live.bilibili.com/room/v1/Room/update",
             cookies=parse_cookie_string(cookie_string=cookies_string),
@@ -217,7 +256,9 @@ def get_main_content(page: ft.Page):
     def update_liveroom_tags_clicked(e):
         """更新直播间标签"""
         global prev_tags
-        result_text.value = "⚠️ 因为 B 站对操作有频率限制，所以修改 tag 需要的时间较久，请耐心等待！"
+        result_text.value = (
+            "⚠️ 因为 B 站对操作有频率限制，所以修改 tag 需要的时间较久，请耐心等待！"
+        )
         page.update()
         tags = set(liveroom_tags_field.value.strip().replace("，", ",").split(","))
         cookies_string = cookies_input.value.strip()
@@ -253,7 +294,13 @@ def get_main_content(page: ft.Page):
                 return
         # 先删除原有的 tag
         for tag in prev_tags:
-            data = {"room_id": roomid_input.value.strip(), "del_tag": tag, "csrf": parse_cookie_string(cookie_string=cookies_string).get("bili_jct")}
+            data = {
+                "room_id": roomid_input.value.strip(),
+                "del_tag": tag,
+                "csrf": parse_cookie_string(cookie_string=cookies_string).get(
+                    "bili_jct"
+                ),
+            }
             resp = requests.post(
                 "https://api.live.bilibili.com/room/v1/Room/update",
                 cookies=parse_cookie_string(cookie_string=cookies_string),
@@ -294,7 +341,13 @@ def get_main_content(page: ft.Page):
                     )
             time.sleep(3)
         for tag in tags:
-            data = {"room_id": roomid_input.value.strip(), "add_tag": tag, "csrf": parse_cookie_string(cookie_string=cookies_string).get("bili_jct")}
+            data = {
+                "room_id": roomid_input.value.strip(),
+                "add_tag": tag,
+                "csrf": parse_cookie_string(cookie_string=cookies_string).get(
+                    "bili_jct"
+                ),
+            }
             resp = requests.post(
                 "https://api.live.bilibili.com/room/v1/Room/update",
                 cookies=parse_cookie_string(cookie_string=cookies_string),
@@ -400,7 +453,9 @@ def get_main_content(page: ft.Page):
             data={
                 "room_id": room_id,
                 "area_id": area_id,
-                "csrf": parse_cookie_string(cookie_string=cookies_input.value.strip()).get("bili_jct"),
+                "csrf": parse_cookie_string(
+                    cookie_string=cookies_input.value.strip()
+                ).get("bili_jct"),
             },
         )
         if resp.status_code == 200:
@@ -503,9 +558,7 @@ def get_main_content(page: ft.Page):
         page.update()
 
     qr_login_button = ft.ElevatedButton(
-        text="扫码登录",
-        width=150,
-        on_click=show_qr_login_page
+        text="扫码登录", width=150, on_click=show_qr_login_page
     )
     qr_login_row = ft.Row(
         controls=[qr_login_button],
@@ -551,7 +604,7 @@ def get_main_content(page: ft.Page):
         """聚焦时显示明文"""
         stream_code_input.password = False
         page.update()
-    
+
     def handle_code_blur(e):
         """失去焦点时重新隐藏"""
         stream_code_input.password = True
@@ -583,12 +636,19 @@ def get_main_content(page: ft.Page):
     )
 
     # 操作结果显示区域
-    result_text = ft.Text(value="欢迎使用 BiliLive Utility 工具箱！本程序的所有提示会在这里显示 =w=\n如果本工具显示不全的话，可以把本工具的窗口拉大来，或者滚动浏览使用。", size=18, text_align=ft.TextAlign.CENTER, width=1000)
+    result_text = ft.Text(
+        value="欢迎使用 BiliLive Utility 工具箱！本程序的所有提示会在这里显示 =w=\n如果本工具显示不全的话，可以把本工具的窗口拉大来，或者滚动浏览使用。",
+        size=18,
+        text_align=ft.TextAlign.CENTER,
+        width=1000,
+    )
 
     # 免责声明
     disclaimer_text = ft.Text(
         value="本项目仅供个人学习、研究和非商业性用途。用户在使用本工具时，需自行确保遵守相关法律法规，特别是与版权相关的法律条款。开发者不对因使用本工具而产生的任何版权纠纷或法律责任承担责任。请用户在使用时谨慎，确保其行为合法合规，并仅在有合法授权的情况下使用相关内容。",
-        size=12, text_align=ft.TextAlign.CENTER, width=1000,
+        size=12,
+        text_align=ft.TextAlign.CENTER,
+        width=1000,
     )
 
     # 按钮
@@ -614,13 +674,12 @@ def get_main_content(page: ft.Page):
     # 开播按钮点击
     def start_live_clicked(e):
         if prev_tags == [] or prev_title == "":
-            save_log_to_file(
-                "用户在开播前未获取直播间信息，尝试自动获取", level="WARN")
+            save_log_to_file("用户在开播前未获取直播间信息，尝试自动获取", level="WARN")
             get_liveroom_data_clicked(e=None)
             # result_text.value = "❌ 你必须先获取你的直播间信息后才能开播！"
             # save_log_to_file("用户在开播前未获取直播间信息", level="ERROR")
             # page.update()
-            # return 
+            # return
         result_text.value = ""
         stream_addr_input.value = ""
         stream_code_input.value = ""
@@ -660,18 +719,66 @@ def get_main_content(page: ft.Page):
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0",
         }
 
-        start_data_bls = {
-            "room_id": roomid,
-            "platform": "pc_link",
-            "area_v2": liveroom_area.value.split("(")[-1].strip(")"),
-            "backup_stream": "0",
-            "csrf_token": csrf,
-            "csrf": csrf,
-        }
-
         try:
+            # 获取直播姬版本
+            ts = str(int(time.time()))
+            payload = {
+                "appkey": APPKEY,
+                "ts": ts,
+                "system_version": "2",
+            }
+            get_ver_sign = get_sign(payload, appkey=APPKEY, appsec=APPSEC)
+            resp = requests.get(
+                f"https://api.live.bilibili.com/xlive/app-blink/v1/liveVersionInfo/getHomePageLiveVersion?system_version=2&appkey={APPKEY}&ts={ts}&sign={get_ver_sign}",
+                headers={
+                    "accept": "application/json, text/plain, */*",
+                    "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+                    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0",
+                },
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                if data.get("code") == 0:
+                    version = data.get("data", {}).get("curr_version", "7.19.0.1000")
+                    build = data.get("data", {}).get("build", "1000")
+                    # 特殊处理
+                    if version == "7.19.0.9432" and str(build) == "9432":
+                        version = "7.19.0.1000"
+                        build = "1000"
+                        save_log_to_file(
+                            "获取直播姬版本为 7.19.0.9432 (build=9432)，因为此版本需要特殊处理，故自动转换为 7.19.0.1000，build 为 1000",
+                            level="INFO",
+                        )
+                    save_log_to_file(f"获取直播姬版本成功：{version}", level="INFO")
+                else:
+                    version = "7.19.0.1000"
+                    build = "1000"
+                    save_log_to_file(
+                        f"获取直播姬版本失败：{data.get('message', '未知错误')}，将固定为 7.19.0.1000，build 为 1000",
+                        level="ERROR",
+                    )
+            save_log_to_file(f"直播姬版本 API 返回内容: {data}", level="DEBUG")
+
+            start_data_bls = {
+                "room_id": roomid,
+                "platform": "pc_link",
+                "area_v2": liveroom_area.value.split("(")[-1].strip(")"),
+                "csrf_token": csrf,
+                "csrf": csrf,
+                "version": version,
+                "build": str(build),
+                "appkey": APPKEY
+            }
+            
+            start_data_bls = dict(sorted(start_data_bls.items()))
+            start_data_bls["sign"] = get_sign(start_data_bls)
+
             result_text.value = "正在发送开播请求..."
             save_log_to_file("正在发送开播请求", level="INFO")
+            save_log_to_file(
+                f"开播请求数据: {json.dumps(start_data_bls, indent=2, ensure_ascii=False)}",
+                level="DEBUG",
+            )
             page.update()
             start_resp = requests.post(
                 "https://api.live.bilibili.com/room/v1/Room/startLive",
@@ -705,9 +812,7 @@ def get_main_content(page: ft.Page):
                     )
 
                 else:
-                    result_text.value = (
-                        "🎉 开播成功！推流信息已显示。"
-                    )
+                    result_text.value = "🎉 开播成功！推流信息已显示。"
                     save_log_to_file("开播成功！推流信息已显示。", level="INFO")
                     save_log_to_file(
                         f"推流地址：{addr}\n推流密钥：{code[0] + (len(code)-2) * '*' + code[-1]}",
@@ -764,12 +869,46 @@ def get_main_content(page: ft.Page):
             page.update()
             return
 
+        # # 获取直播姬版本
+        # resp = requests.get(
+        #     "https://api.live.bilibili.com/xlive/app-blink/v1/liveVersionInfo/getHomePageLiveVersion?system_version=2",
+        #     headers={
+        #         "accept": "application/json, text/plain, */*",
+        #         "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+        #         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0",
+        #     },
+        # )
+        # if resp.status_code == 200:
+        #     data = resp.json()
+        #     if data.get("code") == 0:
+        #         version = data.get("data", {}).get("curr_version", "7.19.0.1000")
+        #         build = data.get("data", {}).get("build", "1000")
+        #         # 特殊处理
+        #         if version == "7.19.0.9432" and str(build) == "9432":
+        #             version = "7.19.0.1000"
+        #             build = "1000"
+        #             save_log_to_file(
+        #                 "获取直播姬版本为 7.19.0.9432 (build=9432)，因为此版本需要特殊处理，故自动转换为 7.19.0.1000，build 为 1000",
+        #                 level="INFO",
+        #             )
+        #         save_log_to_file(f"获取直播姬版本成功：{version}", level="INFO")
+        #     else:
+        #         version = "7.19.0.1000"
+        #         build = "1000"
+        #         save_log_to_file(
+        #             f"获取直播姬版本失败：{data.get('message', '未知错误')}，将固定为 7.19.0.1000，build 为 1000",
+        #             level="ERROR",
+        #         )
+        # save_log_to_file(f"直播姬版本 API 返回内容: {data}", level="DEBUG")
+        
         stop_data_bls = {
             "room_id": roomid,
             "platform": "pc_link",
-            "csrf_token": csrf,
             "csrf": csrf,
         }
+        
+        # stop_data_bls = dict(sorted(stop_data_bls.items()))
+        # stop_data_bls["sign"] = get_sign(stop_data_bls)
 
         try:
             result_text.value = "正在发送停播请求..."
@@ -891,7 +1030,9 @@ def get_main_content(page: ft.Page):
             cookies_dict = parse_cookie_string(page.login_cookies)
             dede_user_id = cookies_dict.get("DedeUserID", "")
             if dede_user_id:
-                save_log_to_file(f"从 Cookie 提取 DedeUserID: {dede_user_id}", level="INFO")
+                save_log_to_file(
+                    f"从 Cookie 提取 DedeUserID: {dede_user_id}", level="INFO"
+                )
                 room_id = get_user_room_id(dede_user_id, page.login_cookies)
                 if room_id:
                     roomid_input.value = room_id
@@ -913,7 +1054,9 @@ def get_main_content(page: ft.Page):
     def get_areas():
         """获取直播分区信息"""
         global areas
-        save_log_to_file("正在调用 get_areas() 函数获取直播分区信息", level="INFO")  # 确认函数被调用
+        save_log_to_file(
+            "正在调用 get_areas() 函数获取直播分区信息", level="INFO"
+        )  # 确认函数被调用
         try:
             response = requests.get(
                 "https://api.live.bilibili.com/room/v1/Area/getList",
@@ -930,7 +1073,9 @@ def get_main_content(page: ft.Page):
                         ft.dropdown.Option(f"{area['name']}({area['id']})")
                         for area in areas
                     ]
-                    save_log_to_file(f"成功设置父分区选项：{len(areas)} 个分区", level="INFO")
+                    save_log_to_file(
+                        f"成功设置父分区选项：{len(areas)} 个分区", level="INFO"
+                    )
                 else:
                     save_log_to_file(
                         f"获取直播分区信息失败！错误信息：{response.json().get('message', '未知错误')}",
@@ -971,11 +1116,16 @@ def get_main_content(page: ft.Page):
             checkbox_row,
             ft.Divider(height=20),
             button_row,
-            ft.Text(value="本程序基于 AGPL-3.0 许可证发布。使用本程序的风险由使用者自行承担。作者不对因使用本程序导致的任何后果承担责任。\n本程序仅在 GitHub 上分发：https://github.com/GamerNoTitle/BiliLive-Utility。\n如果您在其他平台发现本程序，请注意谨防盗号以及受骗。作者不会为其他平台上的程序提供任何支持。", size=12, text_align=ft.TextAlign.CENTER, selectable=True),
+            ft.Text(
+                value="本程序基于 AGPL-3.0 许可证发布。使用本程序的风险由使用者自行承担。作者不对因使用本程序导致的任何后果承担责任。\n本程序仅在 GitHub 上分发：https://github.com/GamerNoTitle/BiliLive-Utility。\n如果您在其他平台发现本程序，请注意谨防盗号以及受骗。作者不会为其他平台上的程序提供任何支持。",
+                size=12,
+                text_align=ft.TextAlign.CENTER,
+                selectable=True,
+            ),
             ft.Divider(height=20),
         ],
         alignment=ft.MainAxisAlignment.CENTER,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        spacing=10
+        spacing=10,
     )
     return main_content
