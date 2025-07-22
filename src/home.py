@@ -741,14 +741,6 @@ def get_main_content(page: ft.Page):
                 if data.get("code") == 0:
                     version = data.get("data", {}).get("curr_version", "7.19.0.1000")
                     build = data.get("data", {}).get("build", "1000")
-                    # 特殊处理
-                    if version == "7.19.0.9432" and str(build) == "9432":
-                        version = "7.19.0.1000"
-                        build = "1000"
-                        save_log_to_file(
-                            "获取直播姬版本为 7.19.0.9432 (build=9432)，因为此版本需要特殊处理，故自动转换为 7.19.0.1000，build 为 1000",
-                            level="INFO",
-                        )
                     save_log_to_file(f"获取直播姬版本成功：{version}", level="INFO")
                 else:
                     version = "7.19.0.1000"
@@ -767,6 +759,7 @@ def get_main_content(page: ft.Page):
                 "csrf": csrf,
                 "version": version,
                 "build": str(build),
+                "ts": int(time.time()),
                 "appkey": APPKEY
             }
             
