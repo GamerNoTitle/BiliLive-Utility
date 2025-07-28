@@ -1,8 +1,12 @@
-name: Build on Windows
+name: Build and Release
 
 on:
   push:
-    branches: [ master ]
+    # 仅在 master 分支有推送时触发
+    branches: [ master, v2 ]
+    # 在创建形如 v*.*.* 的 tag 时触发 (用于自动发布 Release)
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
   pull_request:
     branches: [ master ]
 
@@ -15,48 +19,63 @@ jobs:
       POWERSHELL_TELEMETRY_OPTOUT: 1
 
     steps:
-    - name: Checkout code
+    - name: Checkout Code
       uses: actions/checkout@v4
       with:
-        submodules: true
+        ref: ${{ github.ref }}
 
-    - name: Install Python
+    - name: Setup Python and uv
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'
-
-    - name: Install uv
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install uv
+        cache: 'pip'
+    - run: python -m pip install --upgrade pip uv
       shell: powershell
 
-    - name: Sync dependencies with uv
-      run: |
-        uv sync
+    - name: Install Dependencies
+      run: uv sync
       shell: powershell
 
-    - name: Run build script
-      run: |
-        if (Test-Path build.ps1) {
-          .\build.ps1
-        } else {
-          Write-Error "build.ps1 not found!"
-          exit 1
-        }
-      shell: powershell
-
-    - name: Get version from pyproject.toml
+    - name: Update Version File and Get Version
       id: get_version
       run: |
-        $version = (Get-Content pyproject.toml | Select-String -Pattern 'version = "([^"]+)"').Matches.Groups[1].Value
-        Write-Host "Extracted version: $version"
-        Write-Host "VERSION=$version" >> $GITHUB_ENV
-        echo "version=$version" >> $env:GITHUB_OUTPUT
+        $version = python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])"
+        Write-Host "成功读取版本号: $version"
+
+        $version_file = "src/bililive_utility/utils/version.py"
+        $version_content = "__version__ = `"$version`""
+        Set-Content -Path $version_file -Value $version_content -Encoding utf8
+        Write-Host "已将版本号更新到 $version_file"
+
+        echo "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
       shell: powershell
 
-    - name: Upload build artifacts
+    - name: Build Application with PyInstaller
+      run: |
+        uv pip install -e .
+
+        uv run pyinstaller `
+            --name "BiliLive Utility" `
+            --windowed `
+            --noconfirm `
+            --clean `
+            --add-data "static;static" `
+            --hidden-import "uvicorn.logging" `
+            --hidden-import "uvicorn.loops" `
+            --hidden-import "uvicorn.loops.auto" `
+            --hidden-import "uvicorn.protocols" `
+            --hidden-import "uvicorn.protocols.http" `
+            --hidden-import "uvicorn.protocols.http.auto" `
+            --hidden-import "uvicorn.protocols.websockets" `
+            --hidden-import "uvicorn.protocols.websockets.auto" `
+            --hidden-import "uvicorn.lifespan" `
+            --hidden-import "uvicorn.lifespan.on" `
+            --icon="static/favicon.ico" `
+            src/bililive_utility/__main__.py
+      shell: powershell
+
+    - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: BiliLive-Utility-${{ steps.get_version.outputs.version }}
-        path: build/windows
+        name: BiliLive-Utility-v${{ steps.get_version.outputs.version }}
+        path: dist/

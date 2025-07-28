@@ -92,17 +92,25 @@ class BiliLiveUtility {
         })
     }
 
-    checkFirstVisit() {
-        const hasAcceptedDisclaimer = localStorage.getItem("disclaimerAccepted")
-        if (!hasAcceptedDisclaimer) {
+    async checkFirstVisit() {
+        // 检查是否是首次访问
+        const firstAccess = true
+        const data = await (await fetch("/api/application/info")).json().then(data => data.data.application)
+        if (data.first_access === undefined) {
+        } else {
+            const firstAccess = data.first_access
+        }
+        const version = data.version
+        if (!firstAccess) {
             document.getElementById("disclaimerModal").style.display = "flex"
         } else {
             this.checkLoginStatus()
         }
+        document.getElementById("version").textContent = `${version}`
     }
 
-    acceptDisclaimer() {
-        localStorage.setItem("disclaimerAccepted", "true")
+    async acceptDisclaimer() {
+        await fetch("/api/application/first_access")
         document.getElementById("disclaimerModal").style.display = "none"
         this.checkLoginStatus()
     }
@@ -111,16 +119,20 @@ class BiliLiveUtility {
         window.close()
     }
 
-    checkLoginStatus() {
-        const cookies = localStorage.getItem("cookies")
-        const roomId = localStorage.getItem("roomId")
+    async checkLoginStatus() {
+        // 检查登录状态
+        const isLoggedIn = await (await fetch("/api/auth/check_login")).json().then(data => data.success)
 
-        if (cookies && roomId) {
+        if (isLoggedIn) {
             // 已登录，显示主页面
             this.showMainPage()
-            document.getElementById("cookies").value = cookies
-            document.getElementById("roomId").value = roomId
             document.getElementById("liveToggle").classList.remove("hidden")
+            // 填充直播间号和 Cookies
+            const credentials = await (await fetch("/api/auth/credentials")).json().then(data => data.data)
+            const roomId = credentials.room_id || ""
+            const cookies = credentials.cookies || ""
+            document.getElementById("roomId").value = roomId
+            document.getElementById("cookies").value = cookies
         } else {
             // 未登录，显示登录页面
             this.showLoginPage()
@@ -146,9 +158,9 @@ class BiliLiveUtility {
 
             if (response.ok) {
                 const data = await response.json()
-                this.displayQRCode(data.qr_url)
-                this.qrKey = data.qrcode_key
-                this.startQRPolling()
+                this.displayQRCode(data.data.url)
+                this.qrKey = data.data.qrcode_key
+                this.startQRPolling(this.qrKey)
                 this.startCountdown()
             } else {
                 throw new Error("生成二维码失败")
@@ -160,9 +172,10 @@ class BiliLiveUtility {
         }
     }
 
-    displayQRCode(url) {
+    async displayQRCode(url) {
         const qrContainer = document.getElementById("qrCode")
-        qrContainer.innerHTML = `<img src="/placeholder.svg?height=250&width=250" alt="登录二维码" style="width: 100%; height: 100%; object-fit: contain;">`
+        const qrImage = await (await fetch("/api/auth/getqr?link=" + encodeURIComponent(url))).json().then(data => data.data)
+        qrContainer.innerHTML = `<img src="data:image/png;base64,${qrImage}" alt="登录二维码" style="width: 100%; height: 100%; object-fit: contain;">`
         document.getElementById("qrStatus").textContent = "请使用B站手机客户端扫码登录"
     }
 
@@ -175,26 +188,33 @@ class BiliLiveUtility {
     }
 
     startCountdown() {
+        // 清除旧的计时器
+        if (this.countdownTimer) {
+            clearInterval(this.countdownTimer)
+        }
+
         this.countdownSeconds = 180
+        document.getElementById("countdown").textContent = this.countdownSeconds // 立即更新一次UI
+
         this.countdownTimer = setInterval(() => {
             this.countdownSeconds--
             document.getElementById("countdown").textContent = this.countdownSeconds
 
             if (this.countdownSeconds <= 0) {
                 clearInterval(this.countdownTimer)
-                this.generateQRCode() // 自动刷新
+                this.generateQRCode()
             }
         }, 1000)
     }
 
-    async startQRPolling() {
+    async startQRPolling(qrKey) {
         if (this.qrTimer) {
             clearInterval(this.qrTimer)
         }
 
         this.qrTimer = setInterval(async () => {
             try {
-                const response = await fetch(`/api/auth/poll?qrcode_key=${this.qrKey}`)
+                const response = await fetch(`/api/auth/poll?qrcode_key=${qrKey}`)
 
                 if (response.ok) {
                     const data = await response.json()
@@ -202,13 +222,6 @@ class BiliLiveUtility {
                 }
             } catch (error) {
                 console.error("轮询失败:", error)
-                // 模拟登录成功（用于演示）
-                setTimeout(() => {
-                    this.handleLoginSuccess({
-                        cookies: "demo_cookies_string",
-                        room_id: "12345678",
-                    })
-                }, 5000)
             }
         }, 2000)
     }
@@ -216,7 +229,7 @@ class BiliLiveUtility {
     handleQRStatus(data) {
         const statusElement = document.getElementById("qrStatus")
 
-        switch (data.code) {
+        switch (data.data.code) {
             case 0: // 登录成功
                 this.handleLoginSuccess(data.data)
                 break
@@ -235,44 +248,31 @@ class BiliLiveUtility {
         clearInterval(this.qrTimer)
         clearInterval(this.countdownTimer)
 
-        // 保存登录信息
-        localStorage.setItem("cookies", data.cookies)
-        localStorage.setItem("roomId", data.room_id)
-
-        this.showStatus("🎉 登录成功！正在跳转...", "success")
+        this.showStatus("登录成功！正在跳转...", "success")
 
         setTimeout(() => {
             this.showMainPage()
-            document.getElementById("cookies").value = data.cookies
-            document.getElementById("roomId").value = data.room_id
+            document.getElementById("cookies").value = data.data.cookies
+            document.getElementById("roomId").value = data.data.room_id
             document.getElementById("liveToggle").classList.remove("hidden")
         }, 1500)
     }
 
     async loadAreas() {
         try {
-            // 使用模拟数据，实际可以从后端获取
-            this.areas = [
-                {
-                    id: 1,
-                    name: "娱乐",
-                    list: [
-                        { id: 199, name: "唱见电台" },
-                        { id: 200, name: "聊天" },
-                        { id: 201, name: "情感" },
-                    ],
-                },
-                {
-                    id: 2,
-                    name: "游戏",
-                    list: [
-                        { id: 86, name: "英雄联盟" },
-                        { id: 87, name: "绝地求生" },
-                        { id: 88, name: "我的世界" },
-                    ],
-                },
-            ]
-
+            const areas = await (await fetch("/api/room/areas")).json().then(data => data.data)
+            // 拆解 areas 数据
+            // data 里面是每个父分区，父分区下的 list 是子分区
+            // 获取父分区的 id 和 name 并组合为 {name}(id) 的格式
+            // 再获取每个父分区下的子分区的 id 和 name 并组合为 {name}(id) 的格式
+            this.areas = areas.map(area => ({
+                id: area.id,
+                name: area.name,
+                list: area.list.map(subArea => ({
+                    id: subArea.id,
+                    name: subArea.name
+                }))
+            }))
             this.populateParentAreas()
         } catch (error) {
             console.error("加载分区失败:", error)
@@ -280,10 +280,15 @@ class BiliLiveUtility {
     }
 
     populateParentAreas() {
+        // 填充父分区下拉框
+        const areas = this.areas.filter(area => area.list && area.list.length > 0)
+        if (areas.length === 0) {
+            const parentAreaSelect = document.getElementById("parentArea")
+            parentAreaSelect.innerHTML = '<option value="">-- 请选择父分区 --</option>'
+        }
         const parentAreaSelect = document.getElementById("parentArea")
         parentAreaSelect.innerHTML = '<option value="">-- 请选择父分区 --</option>'
-
-        this.areas.forEach((area) => {
+        areas.forEach(area => {
             const option = document.createElement("option")
             option.value = area.id
             option.textContent = `${area.name}(${area.id})`
@@ -311,50 +316,32 @@ class BiliLiveUtility {
     }
 
     async getRoomData() {
-        const roomId = document.getElementById("roomId").value.trim()
-        if (!roomId) {
-            this.showStatus("❌ 错误：直播间号不能为空！", "error")
-            return
-        }
-
-        this.showLoading(true)
-
         try {
-            const response = await fetch("/api/room/getinfo")
+            const response = await fetch("/api/room/info")
 
             if (response.ok) {
                 const data = await response.json()
                 this.populateRoomData(data)
-                this.showStatus("🎉 成功获取直播间信息！", "success")
+                this.showStatus("成功获取直播间信息！", "success")
             } else {
                 throw new Error("获取直播间信息失败")
             }
         } catch (error) {
             console.error("获取直播间信息失败:", error)
-            // 使用模拟数据
-            this.populateRoomData({
-                title: "测试直播间标题",
-                tags: ["游戏", "娱乐", "聊天"],
-                area: { area: 2, sub_area: 86 },
-                parent_area_name: "游戏",
-                area_name: "英雄联盟",
-            })
-            this.showStatus("🎉 成功获取直播间信息！（演示数据）", "success")
-        } finally {
-            this.showLoading(false)
+            this.showStatus("获取直播间信息失败！", "error")
         }
     }
 
     populateRoomData(data) {
-        document.getElementById("roomTitle").value = data.title
-        document.getElementById("roomTags").value = data.tags.join(", ")
+        document.getElementById("roomTitle").value = data.data.title
+        document.getElementById("roomTags").value = data.data.tags.join(", ")
 
         // 设置分区
-        document.getElementById("parentArea").value = data.area.area
+        document.getElementById("parentArea").value = data.data.area.parent_id
         this.onParentAreaChange()
 
         setTimeout(() => {
-            document.getElementById("childArea").value = data.area.sub_area
+            document.getElementById("childArea").value = data.data.area.id
         }, 100)
 
         this.prevTitle = data.title
@@ -368,14 +355,14 @@ class BiliLiveUtility {
 
         if (!this.validateInputs(roomId, cookies, title, "直播间标题")) return
         if (title.length > 41) {
-            this.showStatus("❌ 错误：直播间标题长度不能超过 41 个字符！", "error")
+            this.showStatus("错误：直播间标题长度不能超过 41 个字符！", "error")
             return
         }
 
         this.showLoading(true)
 
         try {
-            const response = await fetch("/api/room/saveinfo", {
+            const response = await fetch("/api/room/info", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -384,7 +371,7 @@ class BiliLiveUtility {
             })
 
             if (response.ok) {
-                this.showStatus("🎉 更新直播间标题成功！", "success")
+                this.showStatus("更新直播间标题成功！", "success")
                 this.showToast("直播间标题已保存", "success")
                 this.prevTitle = title
             } else {
@@ -392,8 +379,7 @@ class BiliLiveUtility {
             }
         } catch (error) {
             console.error("更新标题失败:", error)
-            this.showStatus("🎉 更新直播间标题成功！（演示模式）", "success")
-            this.showToast("直播间标题已保存", "success")
+            this.showToast("直播间标题更新失败", "error")
         } finally {
             this.showLoading(false)
         }
@@ -414,16 +400,16 @@ class BiliLiveUtility {
 
         for (const tag of tags) {
             if (tag.length > 20) {
-                this.showStatus(`❌ 错误：标签 "${tag}" 长度不能超过 20 个字符！`, "error")
+                this.showStatus(`错误：标签 "${tag}" 长度不能超过 20 个字符！`, "error")
                 return
             }
         }
 
         this.showLoading(true)
-        this.showStatus("⚠️ 因为B站对操作有频率限制，所以修改标签需要的时间较久，请耐心等待！", "warning")
+        this.showStatus("因为B站对操作有频率限制，所以修改标签需要的时间较久，请耐心等待！", "warning")
 
         try {
-            const response = await fetch("/api/room/saveinfo", {
+            const response = await fetch("/api/room/info", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -432,7 +418,7 @@ class BiliLiveUtility {
             })
 
             if (response.ok) {
-                this.showStatus("🎉 更新直播间标签成功！", "success")
+                this.showStatus("更新直播间标签成功！", "success")
                 this.showToast("直播间标签已保存", "success")
                 this.prevTags = tags
             } else {
@@ -440,8 +426,8 @@ class BiliLiveUtility {
             }
         } catch (error) {
             console.error("更新标签失败:", error)
-            this.showStatus("🎉 更新直播间标签成功！（演示模式）", "success")
-            this.showToast("直播间标签已保存", "success")
+            this.showToast("直播间标签更新失败", "error")
+            this.showStatus("更新直播间标签失败！", "error")
         } finally {
             this.showLoading(false)
         }
@@ -454,7 +440,7 @@ class BiliLiveUtility {
         const cookies = document.getElementById("cookies").value.trim()
 
         if (!areaId) {
-            this.showStatus("❌ 错误：请选择直播间分区！", "error")
+            this.showStatus("错误：请选择直播间分区！", "error")
             return
         }
 
@@ -463,7 +449,7 @@ class BiliLiveUtility {
         this.showLoading(true)
 
         try {
-            const response = await fetch("/api/room/saveinfo", {
+            const response = await fetch("/api/room/info", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -477,15 +463,15 @@ class BiliLiveUtility {
             })
 
             if (response.ok) {
-                this.showStatus("🎉 更新直播间分区成功！", "success")
+                this.showStatus("更新直播间分区成功！", "success")
                 this.showToast("直播间分区已保存", "success")
             } else {
                 throw new Error("更新失败")
             }
         } catch (error) {
             console.error("更新分区失败:", error)
-            this.showStatus("🎉 更新直播间分区成功！（演示模式）", "success")
-            this.showToast("直播间分区已保存", "success")
+            this.showToast("直播间分区更新失败", "error")
+            this.showStatus("更新直播间分区失败！", "error")
         } finally {
             this.showLoading(false)
         }
@@ -502,6 +488,15 @@ class BiliLiveUtility {
 
         this.showLoading(true)
 
+        if (isStarting) {
+            const areaId = document.getElementById("childArea").value
+            if (!areaId) {
+                this.showStatus("请先获取直播间信息后再开播！", "error")
+                this.showLoading(false)
+                return
+            }
+        }
+
         try {
             const endpoint = isStarting ? "/api/live/start" : "/api/live/stop"
             const response = await fetch(endpoint, {
@@ -509,6 +504,7 @@ class BiliLiveUtility {
                 headers: {
                     "Content-Type": "application/json",
                 },
+                body: isStarting ? JSON.stringify({ area: document.getElementById("childArea").value }) : null,
             })
 
             if (response.ok) {
@@ -519,21 +515,12 @@ class BiliLiveUtility {
                     this.handleLiveStop()
                 }
             } else {
-                throw new Error(`${isStarting ? "开播" : "停播"}失败`)
+                this.showStatus(`${(await response.json()).data.error}`, "error")
+                this.showToast(`${isStarting ? "开播" : "停播"}失败`, "error")
             }
         } catch (error) {
             console.error(`${isStarting ? "开播" : "停播"}失败:`, error)
-            // 演示模式
-            if (isStarting) {
-                this.handleLiveStart({
-                    rtmp: {
-                        addr: "rtmp://live-push.bilivideo.com/live-bvc/",
-                        code: "demo_stream_key_12345",
-                    },
-                })
-            } else {
-                this.handleLiveStop()
-            }
+            this.showStatus(`${isStarting ? "开播" : "停播"}失败！`, "error")
         } finally {
             this.showLoading(false)
         }
@@ -545,10 +532,10 @@ class BiliLiveUtility {
         button.innerHTML = '<i class="fas fa-stop"></i> 停播'
         button.classList.add("stop")
 
-        document.getElementById("streamAddr").value = data.rtmp.addr
-        document.getElementById("streamCode").value = data.rtmp.code
+        document.getElementById("streamAddr").value = data.data.rtmp.addr
+        document.getElementById("streamCode").value = data.data.rtmp.code
 
-        this.showStatus("🎉 开播成功！推流信息已显示。", "success")
+        this.showStatus("开播成功！推流信息已显示。", "success")
     }
 
     handleLiveStop() {
@@ -557,7 +544,7 @@ class BiliLiveUtility {
         button.innerHTML = '<i class="fas fa-play"></i> 开播'
         button.classList.remove("stop")
 
-        this.showStatus("🎉 停播成功！", "success")
+        this.showStatus("停播成功！", "success")
     }
 
     saveStreamCredentials() {
@@ -591,7 +578,7 @@ class BiliLiveUtility {
         const text = element.value
 
         if (!text) {
-            this.showStatus("❌ 内容为空，无法复制！", "error")
+            this.showStatus("内容为空，无法复制！", "error")
             return
         }
 
@@ -608,15 +595,15 @@ class BiliLiveUtility {
 
     validateInputs(roomId, cookies, content = null, contentName = null) {
         if (!roomId) {
-            this.showStatus("❌ 错误：直播间号不能为空！", "error")
+            this.showStatus("错误：直播间号不能为空！", "error")
             return false
         }
         if (!cookies) {
-            this.showStatus("❌ 错误：Cookies 不能为空！", "error")
+            this.showStatus("错误：Cookies 不能为空！", "error")
             return false
         }
         if (content !== null && !content) {
-            this.showStatus(`❌ 错误：${contentName}不能为空！`, "error")
+            this.showStatus(`错误：${contentName}不能为空！`, "error")
             return false
         }
         return true
@@ -633,14 +620,6 @@ class BiliLiveUtility {
 
         statusElement.className = `status-message ${type}`
         statusElement.innerHTML = `<i class="${iconMap[type]}"></i><span>${message}</span>`
-
-        // 自动隐藏成功和错误消息
-        if (type === "success" || type === "error") {
-            setTimeout(() => {
-                statusElement.className = "status-message"
-                statusElement.innerHTML = '<i class="fas fa-info-circle"></i><span>欢迎使用 BiliLive Utility 工具箱！</span>'
-            }, 5000)
-        }
     }
 
     showLoading(show) {
@@ -653,7 +632,7 @@ class BiliLiveUtility {
     }
 
     showAbout() {
-        document.getElementById("aboutModal").style.display = "flex"
+        document.getElementById("aboutModal").classList.remove("hidden")
     }
 
     hideAbout() {

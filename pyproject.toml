@@ -1,44 +1,32 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "bililive-utility"
-version = "1.5.0"
-description = ""
-readme = "README.md"
-requires-python = ">=3.9"
+version = "2.0.0"
 authors = [
-    { name = "GamerNoTitle", email = "GamerNoTitle@outlook.com" }
+  { name="GamerNoTitle", email="your-email@example.com" },
+]
+description = "A FastAPI server for BiliLive Utility"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
 ]
 dependencies = [
-  "flet[all]>=0.28.2",
-  "pillow>=11.2.1",
-  "qrcode>=7.4.2",
-  "requests>=2.32.3",
+    "fastapi",
+    "uvicorn[standard]",
+    "httpx[http2]",
+    "platformdirs",
+    "gitpython>=3.1.45",
+    "qrcode>=7.4.2",
+    "pillow>=10.4.0",
+    "pywebview>=5.4",
+    "pyinstaller>=6.14.2",
 ]
 
-[tool.flet]
-# org name in reverse domain name notation, e.g. "com.mycompany".
-# Combined with project.name to build bundle ID for iOS and Android apps
-org = "com.gamernotitle"
-
-# project display name that is used as an app title on Android and iOS home screens,
-# shown in window titles and about app dialogs on desktop.
-product = "bililive-utility"
-
-# company name to display in about app dialogs
-company = "GamerNoTitle"
-
-# copyright text to display in about app dialogs
-copyright = "Copyright (C) 2025 by GamerNoTitle"
-
-[tool.flet.app]
-path = "src"
-
-[tool.uv]
-dev-dependencies = [
-    "flet[all]==0.28.2",
-]
-
-[tool.poetry]
-package-mode = false
-
-[tool.poetry.group.dev.dependencies]
-flet = {extras = ["all"], version = "0.28.2"}
+[project.scripts]
+bililive-utility = "bililive_utility.__main__:main"

@@ -12,7 +12,7 @@
 
 <body>
     <!-- 免责声明模态框 -->
-    <div id="disclaimerModal" class="modal">
+    <div id="disclaimerModal" class="modal" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">
                 <h2><i class="fas fa-exclamation-triangle"></i> 免责声明</h2>
@@ -64,7 +64,7 @@
         <header class="app-header">
             <div class="header-left">
                 <h1><i class="fab fa-bilibili"></i> BiliLive-Utility</h1>
-                <span class="version">v1.0.0</span>
+                <span class="version" id="version">v1.0.0</span>
             </div>
             <div class="header-right">
                 <button id="liveToggle" class="btn btn-live hidden">
@@ -95,8 +95,9 @@
                             <input type="text" id="roomId" placeholder="请输入直播间号" readonly>
                         </div>
                         <div class="form-group">
-                            <label for="cookies">Cookies</label>
-                            <input type="password" id="cookies" placeholder="登录后自动填充" readonly class="hover-reveal">
+                            <label for="cookies">Cookies（点击展示）</label>
+                            <input type="password" id="cookies" placeholder="登录后自动填充" readonly
+                                onfocus="this.type='text'" onblur="this.type='password'">
                         </div>
                     </div>
                 </div>
@@ -124,7 +125,7 @@
 
                     <!-- 直播间标签 -->
                     <div class="form-group">
-                        <label for="roomTags">直播间标签</label>
+                        <label for="roomTags">直播间标签（用逗号分割）</label>
                         <div class="input-with-button">
                             <input type="text" id="roomTags" placeholder="以逗号分割，不分半角全角">
                             <button id="updateTags" class="btn btn-small">
@@ -146,12 +147,12 @@
                             <select id="childArea">
                                 <option value="">-- 请选择子分区 --</option>
                             </select>
-                        </div>
-                        <div class="form-group">
                             <label>&nbsp;</label>
-                            <button id="updateArea" class="btn btn-small">
-                                <i class="fas fa-save"></i> 更新分区
-                            </button>
+                            <div align="right">
+                                <button id="updateArea" class="btn btn-small">
+                                    <i class="fas fa-save"></i> 更新分区
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -173,10 +174,10 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="streamCode">推流密钥</label>
+                        <label for="streamCode">推流密钥（点击展示）</label>
                         <div class="input-with-button">
                             <input type="password" id="streamCode" placeholder="请先开播，开播成功后会展示密钥" readonly
-                                class="hover-reveal">
+                                onfocus="this.type='text'" onblur="this.type='password'">
                             <button id="copyCode" class="btn btn-small">
                                 <i class="fas fa-copy"></i> 复制
                             </button>
@@ -200,7 +201,7 @@
     </div>
 
     <!-- 关于页面模态框 -->
-    <div id="aboutModal" class="modal">
+    <div id="aboutModal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
                 <h2><i class="fas fa-info-circle"></i> 关于 BiliLive-Utility</h2>
