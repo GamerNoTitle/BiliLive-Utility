@@ -33,6 +33,7 @@ jobs:
     - name: Update Version File and Get Version
       id: get_version
       run: |
+        pip install toml
         $version = python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])"
         Write-Host "Successfully found version: $version"
         echo "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
