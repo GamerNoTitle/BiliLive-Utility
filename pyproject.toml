@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bililive-utility"
-version = "2.0.0"
+version = "2.0.0-pre1"
 authors = [
-  { name="GamerNoTitle", email="your-email@example.com" },
+  { name="GamerNoTitle", email="GamerNoTitle@outlook.com" },
 ]
-description = "A FastAPI server for BiliLive Utility"
+description = "BiliLive Utility is a tool that helps you manage your Bilibili live streams, including features like QR code login, stream management, and more, without being trapped by 5k fans requirement."
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
