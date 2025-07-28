@@ -13,10 +13,6 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    env:
-      PYTHONUTF8: 1
-      PYTHONIOENCODING: utf-8
-      POWERSHELL_TELEMETRY_OPTOUT: 1
 
     steps:
     - name: Checkout Code
@@ -39,6 +35,7 @@ jobs:
     - name: Update Version File and Get Version
       id: get_version
       run: |
+        pip install toml
         $version = python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])"
         Write-Host "成功读取版本号: $version"
 
