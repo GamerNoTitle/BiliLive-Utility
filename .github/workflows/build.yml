@@ -44,9 +44,11 @@ jobs:
       run: |
         VERSION_NUMBER="${{ steps.get_version.outputs.version }}"
         VERSION_FILE="src/bililive_utility/utils/version.py"
+        
+        NEW_LINE="VERSION = Version(version=\"$VERSION_NUMBER\")"
 
         echo "Writing version '$VERSION_NUMBER' to $VERSION_FILE"
-        sed -i "s|^VERSION = Version(.*)$|VERSION = Version(version=\"$VERSION_NUMBER\")|" "$VERSION_FILE"
+        sed -i "/^VERSION = Version(/,/^)/c\\$NEW_LINE" "$VERSION_FILE"
 
         echo "File content replacement completed:"
         cat "$VERSION_FILE"
@@ -54,7 +56,6 @@ jobs:
     - name: Build Application with PyInstaller
       run: |
         uv pip install -e .
-
         uv run pyinstaller `
             --name "BiliLive Utility" `
             --windowed `
@@ -75,8 +76,12 @@ jobs:
             src/bililive_utility/launcher.py
       shell: powershell
 
+    - name: Move static folder
+      run: |
+        mv "dist/BiliLive Utility/_internal/static" "dist/BiliLive Utility/static"
+      shell: bash
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
         name: BiliLive-Utility-v${{ steps.get_version.outputs.version }}
-        path: dist/
+        path: dist/BiliLive Utility/
