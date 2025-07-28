@@ -2,9 +2,7 @@ name: Build and Release
 
 on:
   push:
-    # 仅在 master 分支有推送时触发
     branches: [ master, v2 ]
-    # 在创建形如 v*.*.* 的 tag 时触发 (用于自动发布 Release)
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+*'
   pull_request:
@@ -35,17 +33,22 @@ jobs:
     - name: Update Version File and Get Version
       id: get_version
       run: |
-        pip install toml
         $version = python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])"
-        Write-Host "成功读取版本号: $version"
-
-        $version_file = "src/bililive_utility/utils/version.py"
-        $version_content = "__version__ = `"$version`""
-        Set-Content -Path $version_file -Value $version_content -Encoding utf8
-        Write-Host "已将版本号更新到 $version_file"
-
+        Write-Host "Successfully found version: $version"
         echo "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
       shell: powershell
+
+    - name: Replace Version in Python File using sed
+      shell: bash
+      run: |
+        VERSION_NUMBER="${{ steps.get_version.outputs.version }}"
+        VERSION_FILE="src/bililive_utility/utils/version.py"
+
+        echo "Writing version '$VERSION_NUMBER' to $VERSION_FILE"
+        sed -i "s|^VERSION = Version(.*)$|VERSION = Version(version=\"$VERSION_NUMBER\")|" "$VERSION_FILE"
+
+        echo "File content replacement completed:"
+        cat "$VERSION_FILE"
 
     - name: Build Application with PyInstaller
       run: |
