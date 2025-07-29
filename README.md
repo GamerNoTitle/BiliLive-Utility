@@ -20,41 +20,25 @@
 
 ### 下载及程序
 
-访问 https://github.com/GamerNoTitle/BiliLive-Utility/releases 下载最新的发行版，解压后打开里面的 `bililive_utility.exe`
-
-> [!warning]
->
-> 程序无法在有中文路径的目录下运行，已知这是 UI 库 flet 的问题，不是本程序的问题，暂时无法解决，请放在一个没有中文的路径下运行本程序！
+访问 https://github.com/GamerNoTitle/BiliLive-Utility/releases 下载最新的发行版，解压后打开里面的 `BiliLive Utility.exe`
 
 ### 登录账号
 
 #### 直接通过程序扫码登录
 
-点击程序上方的扫码登录按钮
+同意免责声明后，程序会向你展示登录二维码
 
-![](https://cdn.jsdelivr.net/gh/GamerNoTitle/BiliLive-Utility@master/img/flet_8DcdYSacJo.png)
+![](https://cdn.jsdelivr.net/gh/GamerNoTitle/BiliLive-Utility@master/img/python_PdoVScpiUH.png)
 
-扫码登录即可，登录后会自己弹回去主页面
+扫码登录后，就会进入程序主页面了，此时顶上的直播间号和 Cookie 会自动填充（只读，不可修改）
 
-![](https://cdn.jsdelivr.net/gh/GamerNoTitle/BiliLive-Utility@master/img/flet_IWbvYqI8pF.png)
-
-#### 通过浏览器获取
-
-访问 B 站的直播页面 [https://link.bilibili.com/p/center/index#/my-room/start-live](https://link.bilibili.com/p/center/index#/my-room/start-live)，完成登录后，按下键盘上的 <kbd>F12</kbd>，然后点击上方的 `网络/Network`，并搜索 `get_user_info`，然后在左边找到任意一条 `get_user_info`（尽量往下找），然后点击它，在右手边往下滑找到 Cookies，复制内容，保留下来，待会要用
-
-![](https://cdn.jsdelivr.net/gh/GamerNoTitle/BiliLive-Utility@master/img/msedge_TNBFhTIA7i.png)
-
-还是这个页面，我们需要获取我们的直播间 ID，在最顶上直接显示的
-
-![](https://cdn.jsdelivr.net/gh/GamerNoTitle/BiliLive-Utility@master/img/msedge_YAPXAUPOxR.png)
-
-此时弹出来的地址和密钥就是你的直播凭据，你就可以丢到 OBS 里面愉快地开播了！
+![](https://cdn.jsdelivr.net/gh/GamerNoTitle/BiliLive-Utility@master/img/python_d7yFF3elXT.png)
 
 ### 获取及修改直播间信息
 
 点击 `获取直播间数据` 按钮即可获取直播间的数据
 
-![](https://cdn.jsdelivr.net/gh/GamerNoTitle/BiliLive-Utility@master/img/flet_wVrvhcRL4X.png)
+![](https://cdn.jsdelivr.net/gh/GamerNoTitle/BiliLive-Utility@master/img/python_miuJ0NUOZM.png)
 
 此时，需要对什么修改直接改框框里面的内容后，点击右侧的 `更新` 按钮即可
 
@@ -64,11 +48,17 @@
 >
 > 为了安全，你的推流密钥只有在你点击在推流密钥对应的输入框时才会显示，否则不会显示为明文
 
-在上方凭据（直播间号、Cookie）输入正确的前提下，往下滑，找到 `开播` 按钮，点击即可，此时程序会展示你的直播凭据，你可以将它们丢到 OBS 里面使用
+在登录完成且获取了直播间信息后，根据自己想需求更新直播间的信息，在下方推流信息卡中，点击开播按钮，即可开播
 
-![](https://cdn.jsdelivr.net/gh/GamerNoTitle/BiliLive-Utility@master/img/flet_6xZFtkOBx2.png)
+![](https://cdn.jsdelivr.net/gh/GamerNoTitle/BiliLive-Utility@master/img/python_5FuandIBBC.png)
 
-关闭直播同理，直接点击下方的 `停播` 按钮即可
+开播后，开播按钮会变成停播按钮，点击即可停播，你也可以点击保存推流凭据到本地按钮，来对凭据进行一个保存操作
+
+![](https://cdn.jsdelivr.net/gh/GamerNoTitle/BiliLive-Utility@master/img/python_yBEzoS0zHi.png)
+
+点击后，会弹出文件选择框，选择你要保存的位置即可
+
+![](https://cdn.jsdelivr.net/gh/GamerNoTitle/BiliLive-Utility@master/img/python_H7VljaS7iB.png)
 
 ## 源码启动
 
@@ -83,23 +73,13 @@ $ git clone https://github.com/GamerNoTitle/BiliLive-Utility.git
 ```shell
 $ cd BiliLive-Utility
 $ uv sync
-```
-
-如果你倾向于用 venv 的话
-
-```shell
-$ python -m venv .venv
-$ # 如果你是 Linux 用户
-$ source .venv/bin/activate
-$ # 如果是 Windows 用户
-$ .venv\Scripts\activate
-$ pip install -r requirements.txt
+$ uv pip install .
 ```
 
 然后直接运行
 
 ```shell
-$ flet run
+$ uv run bililive-utility
 ```
 
 此时就会打开本程序了
@@ -107,8 +87,3 @@ $ flet run
 ## 赞助
 
 https://bili33.top/sponsors
-
-
-## 碎碎念
-
-实在是不会做 UI 了，直接用 flet 了（其实是我懒得弄网页控制台了，感觉不是很有必要，又不想用 tkinter）

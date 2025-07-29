@@ -1,62 +1,87 @@
-name: Build on Windows
+name: Build and Release
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, v2 ]
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
   pull_request:
     branches: [ master ]
 
 jobs:
   build:
     runs-on: windows-latest
-    env:
-      PYTHONUTF8: 1
-      PYTHONIOENCODING: utf-8
-      POWERSHELL_TELEMETRY_OPTOUT: 1
 
     steps:
-    - name: Checkout code
+    - name: Checkout Code
       uses: actions/checkout@v4
       with:
-        submodules: true
+        ref: ${{ github.ref }}
 
-    - name: Install Python
+    - name: Setup Python and uv
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'
-
-    - name: Install uv
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install uv
+        cache: 'pip'
+    - run: python -m pip install --upgrade pip uv
       shell: powershell
 
-    - name: Sync dependencies with uv
-      run: |
-        uv sync
+    - name: Install Dependencies
+      run: uv sync
       shell: powershell
 
-    - name: Run build script
-      run: |
-        if (Test-Path build.ps1) {
-          .\build.ps1
-        } else {
-          Write-Error "build.ps1 not found!"
-          exit 1
-        }
-      shell: powershell
-
-    - name: Get version from pyproject.toml
+    - name: Update Version File and Get Version
       id: get_version
       run: |
-        $version = (Get-Content pyproject.toml | Select-String -Pattern 'version = "([^"]+)"').Matches.Groups[1].Value
-        Write-Host "Extracted version: $version"
-        Write-Host "VERSION=$version" >> $GITHUB_ENV
-        echo "version=$version" >> $env:GITHUB_OUTPUT
+        pip install toml
+        $version = python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])"
+        Write-Host "Successfully found version: $version"
+        echo "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
       shell: powershell
 
-    - name: Upload build artifacts
+    - name: Replace Version in Python File using sed
+      shell: bash
+      run: |
+        VERSION_NUMBER="${{ steps.get_version.outputs.version }}"
+        VERSION_FILE="src/bililive_utility/utils/version.py"
+        
+        NEW_LINE="VERSION = Version(version=\"$VERSION_NUMBER\")"
+
+        echo "Writing version '$VERSION_NUMBER' to $VERSION_FILE"
+        sed -i "/^VERSION = Version(/,/^)/c\\$NEW_LINE" "$VERSION_FILE"
+
+        echo "File content replacement completed:"
+        cat "$VERSION_FILE"
+
+    - name: Build Application with PyInstaller
+      run: |
+        uv pip install -e .
+        uv run pyinstaller `
+            --name "BiliLive Utility" `
+            --windowed `
+            --noconfirm `
+            --clean `
+            --add-data "static:static" `
+            --hidden-import "uvicorn.logging" `
+            --hidden-import "uvicorn.loops" `
+            --hidden-import "uvicorn.loops.auto" `
+            --hidden-import "uvicorn.protocols" `
+            --hidden-import "uvicorn.protocols.http" `
+            --hidden-import "uvicorn.protocols.http.auto" `
+            --hidden-import "uvicorn.protocols.websockets" `
+            --hidden-import "uvicorn.protocols.websockets.auto" `
+            --hidden-import "uvicorn.lifespan" `
+            --hidden-import "uvicorn.lifespan.on" `
+            --icon="static/favicon.ico" `
+            src/bililive_utility/launcher.py
+      shell: powershell
+
+    - name: Move static folder
+      run: |
+        mv "dist/BiliLive Utility/_internal/static" "dist/BiliLive Utility/static"
+      shell: bash
+    - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: BiliLive-Utility-${{ steps.get_version.outputs.version }}
-        path: build/windows
+        name: BiliLive-Utility-v${{ steps.get_version.outputs.version }}
+        path: dist/BiliLive Utility/
