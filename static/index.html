@@ -5,243 +5,250 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BiliLive-Utility - B站直播间管理工具</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
-    <!-- 免责声明模态框 -->
-    <div id="disclaimerModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-exclamation-triangle"></i> 免责声明</h2>
-            </div>
-            <div class="modal-body">
-                <p>本项目仅供个人学习、研究和非商业性用途。用户在使用本工具时，需自行确保遵守相关法律法规，特别是与版权相关的法律条款。开发者不对因使用本工具而产生的任何版权纠纷或法律责任承担责任。请用户在使用时谨慎，确保其行为合法合规，并仅在有合法授权的情况下使用相关内容。
-                </p>
-            </div>
-            <div class="modal-footer">
-                <button id="agreeBtn" class="btn btn-primary">
-                    <i class="fas fa-check"></i> 我同意并继续
-                </button>
-                <button id="disagreeBtn" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> 不同意
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 登录页面 -->
-    <div id="loginPage" class="page hidden">
-        <div class="login-container">
-            <div class="login-header">
-                <h1><i class="fab fa-bilibili"></i> BiliLive-Utility</h1>
-                <p>B站直播间管理工具</p>
-            </div>
-            <div class="qr-section">
-                <div class="qr-container">
-                    <div id="qrCode" class="qr-placeholder">
-                        <i class="fas fa-qrcode"></i>
-                        <p>正在生成二维码...</p>
-                    </div>
+    <div class='pywebview-drag-region'>
+        <!-- 免责声明模态框 -->
+        <div id="disclaimerModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-exclamation-triangle"></i> 免责声明</h2>
                 </div>
-                <div class="qr-status">
-                    <p id="qrStatus">请使用B站手机客户端扫码登录</p>
-                    <div class="countdown">
-                        <span id="countdown">180</span>秒后自动刷新
-                    </div>
+                <div class="modal-body">
+                    <p>本项目仅供个人学习、研究和非商业性用途。用户在使用本工具时，需自行确保遵守相关法律法规，特别是与版权相关的法律条款。开发者不对因使用本工具而产生的任何版权纠纷或法律责任承担责任。请用户在使用时谨慎，确保其行为合法合规，并仅在有合法授权的情况下使用相关内容。
+                    </p>
                 </div>
-                <button id="refreshQr" class="btn btn-outline">
-                    <i class="fas fa-refresh"></i> 刷新二维码
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 主控制台页面 -->
-    <div id="mainPage" class="page hidden">
-        <header class="app-header">
-            <div class="header-left">
-                <h1><i class="fab fa-bilibili"></i> BiliLive-Utility</h1>
-                <span class="version" id="version">v1.0.0</span>
-            </div>
-            <div class="header-right">
-                <button id="liveToggle" class="btn btn-live hidden">
-                    <i class="fas fa-play"></i> 开播
-                </button>
-                <button id="aboutBtn" class="btn btn-outline">
-                    <i class="fas fa-info-circle"></i> 关于
-                </button>
-            </div>
-        </header>
-
-        <main class="main-content">
-            <!-- 状态提示区域 -->
-            <div id="statusMessage" class="status-message">
-                <i class="fas fa-info-circle"></i>
-                <span>欢迎使用 BiliLive Utility 工具箱！</span>
-            </div>
-
-            <!-- 基本信息卡片 -->
-            <div class="card">
-                <div class="card-header">
-                    <h3><i class="fas fa-user-circle"></i> 基本信息</h3>
-                </div>
-                <div class="card-body">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="roomId">直播间号</label>
-                            <input type="text" id="roomId" placeholder="请输入直播间号" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label for="cookies">Cookies（点击展示）</label>
-                            <input type="password" id="cookies" placeholder="登录后自动填充" readonly
-                                onfocus="this.type='text'" onblur="this.type='password'">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 直播间管理卡片 -->
-            <div class="card">
-                <div class="card-header">
-                    <h3><i class="fas fa-cog"></i> 直播间管理</h3>
-                    <button id="getRoomData" class="btn btn-primary">
-                        <i class="fas fa-download"></i> 获取直播间数据
+                <div class="modal-footer">
+                    <button id="agreeBtn" class="btn btn-primary">
+                        <i class="fas fa-check"></i> 我同意并继续
+                    </button>
+                    <button id="disagreeBtn" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> 不同意
                     </button>
                 </div>
-                <div class="card-body">
-                    <!-- 直播间标题 -->
-                    <div class="form-group">
-                        <label for="roomTitle">直播间标题</label>
-                        <div class="input-with-button">
-                            <input type="text" id="roomTitle" placeholder="直接输入或点击获取直播间信息按钮获取" maxlength="41">
-                            <button id="updateTitle" class="btn btn-small">
-                                <i class="fas fa-save"></i> 保存
-                            </button>
+            </div>
+        </div>
+
+        <!-- 登录页面 -->
+        <div id="loginPage" class="page hidden">
+            <div class="login-container">
+                <div class="login-header">
+                    <h1><i class="fab fa-bilibili"></i> BiliLive-Utility</h1>
+                    <p>B站直播间管理工具</p>
+                </div>
+                <div class="qr-section">
+                    <div class="qr-container">
+                        <div id="qrCode" class="qr-placeholder">
+                            <i class="fas fa-qrcode"></i>
+                            <p>正在生成二维码...</p>
                         </div>
                     </div>
-
-                    <!-- 直播间标签 -->
-                    <div class="form-group">
-                        <label for="roomTags">直播间标签（用逗号分割）</label>
-                        <div class="input-with-button">
-                            <input type="text" id="roomTags" placeholder="以逗号分割，不分半角全角">
-                            <button id="updateTags" class="btn btn-small">
-                                <i class="fas fa-save"></i> 保存
-                            </button>
+                    <div class="qr-status">
+                        <p id="qrStatus">请使用B站手机客户端扫码登录</p>
+                        <div class="countdown">
+                            <span id="countdown">180</span>秒后自动刷新
                         </div>
                     </div>
+                    <button id="refreshQr" class="btn btn-outline">
+                        <i class="fas fa-refresh"></i> 刷新二维码
+                    </button>
+                </div>
+            </div>
+        </div>
 
-                    <!-- 直播间分区 -->
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="parentArea">父分区</label>
-                            <select id="parentArea">
-                                <option value="">-- 请选择父分区 --</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="childArea">子分区</label>
-                            <select id="childArea">
-                                <option value="">-- 请选择子分区 --</option>
-                            </select>
-                            <label>&nbsp;</label>
-                            <div align="right">
-                                <button id="updateArea" class="btn btn-small">
-                                    <i class="fas fa-save"></i> 更新分区
-                                </button>
+        <!-- 主控制台页面 -->
+        <div id="mainPage" class="page hidden">
+            <header class="app-header">
+                <div class="header-left">
+                    <h1><i class="fab fa-bilibili"></i> BiliLive-Utility</h1>
+                    <span class="version" id="version">v1.0.0</span>
+                </div>
+                <div class="header-right">
+                    <button id="liveToggle" class="btn btn-live hidden">
+                        <i class="fas fa-play"></i> 开播
+                    </button>
+                    <button id="aboutBtn" class="btn btn-outline">
+                        <i class="fas fa-info-circle"></i> 关于
+                    </button>
+                    <button id="closeBtn" class="btn btn-close">
+                        <i class="fas fa-times-circle"></i> 关闭
+                    </button>
+                </div>
+            </header>
+
+            <main class="main-content">
+                <!-- 状态提示区域 -->
+                <div id="statusMessage" class="status-message">
+                    <i class="fas fa-info-circle"></i>
+                    <span>欢迎使用 BiliLive Utility 工具箱！</span>
+                </div>
+
+                <!-- 基本信息卡片 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-user-circle"></i> 基本信息</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="roomId">直播间号</label>
+                                <input type="text" id="roomId" placeholder="请输入直播间号" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="cookies">Cookies（点击展示）</label>
+                                <input type="password" id="cookies" placeholder="登录后自动填充" readonly
+                                    onfocus="this.type='text'" onblur="this.type='password'">
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- 推流信息卡片 -->
-            <div class="card">
-                <div class="card-header">
-                    <h3><i class="fas fa-broadcast-tower"></i> 推流信息</h3>
-                </div>
-                <div class="card-body">
-                    <div class="form-group">
-                        <label for="streamAddr">推流地址</label>
-                        <div class="input-with-button">
-                            <input type="text" id="streamAddr" placeholder="请先开播，开播成功后会展示地址" readonly>
-                            <button id="copyAddr" class="btn btn-small">
-                                <i class="fas fa-copy"></i> 复制
-                            </button>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="streamCode">推流密钥（点击展示）</label>
-                        <div class="input-with-button">
-                            <input type="password" id="streamCode" placeholder="请先开播，开播成功后会展示密钥" readonly
-                                onfocus="this.type='text'" onblur="this.type='password'">
-                            <button id="copyCode" class="btn btn-small">
-                                <i class="fas fa-copy"></i> 复制
-                            </button>
-                        </div>
-                    </div>
-                    <div class="button-group right-align">
-                        <button id="saveCredentials" class="btn btn-primary">
-                            <i class="fas fa-download"></i> 保存推流凭据到本地
+                <!-- 直播间管理卡片 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-cog"></i> 直播间管理</h3>
+                        <button id="getRoomData" class="btn btn-primary">
+                            <i class="fas fa-download"></i> 获取直播间数据
                         </button>
                     </div>
+                    <div class="card-body">
+                        <!-- 直播间标题 -->
+                        <div class="form-group">
+                            <label for="roomTitle">直播间标题</label>
+                            <div class="input-with-button">
+                                <input type="text" id="roomTitle" placeholder="直接输入或点击获取直播间信息按钮获取" maxlength="41">
+                                <button id="updateTitle" class="btn btn-small">
+                                    <i class="fas fa-save"></i> 保存
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 直播间标签 -->
+                        <div class="form-group">
+                            <label for="roomTags">直播间标签（用逗号分割）</label>
+                            <div class="input-with-button">
+                                <input type="text" id="roomTags" placeholder="以逗号分割，不分半角全角">
+                                <button id="updateTags" class="btn btn-small">
+                                    <i class="fas fa-save"></i> 保存
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 直播间分区 -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="parentArea">父分区</label>
+                                <select id="parentArea">
+                                    <option value="">-- 请选择父分区 --</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="childArea">子分区</label>
+                                <select id="childArea">
+                                    <option value="">-- 请选择子分区 --</option>
+                                </select>
+                                <label>&nbsp;</label>
+                                <div align="right">
+                                    <button id="updateArea" class="btn btn-small">
+                                        <i class="fas fa-save"></i> 更新分区
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </main>
 
-        <footer class="app-footer">
-            <p>本程序基于 AGPL-3.0 许可证发布。使用本程序的风险由使用者自行承担。</p>
-            <p>本程序仅在 GitHub 上分发：<a href="https://github.com/GamerNoTitle/BiliLive-Utility"
-                    target="_blank">https://github.com/GamerNoTitle/BiliLive-Utility</a></p>
-            <p>如果您在其他平台发现本程序，请注意谨防盗号以及受骗。</p>
-        </footer>
-    </div>
+                <!-- 推流信息卡片 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-broadcast-tower"></i> 推流信息</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="streamAddr">推流地址</label>
+                            <div class="input-with-button">
+                                <input type="text" id="streamAddr" placeholder="请先开播，开播成功后会展示地址" readonly>
+                                <button id="copyAddr" class="btn btn-small">
+                                    <i class="fas fa-copy"></i> 复制
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="streamCode">推流密钥（点击展示）</label>
+                            <div class="input-with-button">
+                                <input type="password" id="streamCode" placeholder="请先开播，开播成功后会展示密钥" readonly
+                                    onfocus="this.type='text'" onblur="this.type='password'">
+                                <button id="copyCode" class="btn btn-small">
+                                    <i class="fas fa-copy"></i> 复制
+                                </button>
+                            </div>
+                        </div>
+                        <div class="button-group right-align">
+                            <button id="saveCredentials" class="btn btn-primary">
+                                <i class="fas fa-download"></i> 保存推流凭据到本地
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
 
-    <!-- 关于页面模态框 -->
-    <div id="aboutModal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-info-circle"></i> 关于 BiliLive-Utility</h2>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="about-content">
-                    <div class="about-section">
-                        <h3>开发者信息</h3>
-                        <p><strong>开发者：</strong>GamerNoTitle</p>
-                        <p><strong>GitHub：</strong><a href="https://github.com/GamerNoTitle"
-                                target="_blank">https://github.com/GamerNoTitle</a></p>
-                        <p><strong>项目地址：</strong><a href="https://github.com/GamerNoTitle/BiliLive-Utility"
-                                target="_blank">https://github.com/GamerNoTitle/BiliLive-Utility</a></p>
-                    </div>
-                    <div class="about-section">
-                        <h3>版本信息</h3>
-                        <p><strong>版本：</strong>v1.0.0</p>
-                        <p><strong>构建时间：</strong>2024-01-01</p>
-                    </div>
-                    <div class="about-section">
-                        <h3>免责声明</h3>
-                        <p>本项目仅供个人学习、研究和非商业性用途。用户在使用本工具时，需自行确保遵守相关法律法规，特别是与版权相关的法律条款。开发者不对因使用本工具而产生的任何版权纠纷或法律责任承担责任。请用户在使用时谨慎，确保其行为合法合规，并仅在有合法授权的情况下使用相关内容。
-                        </p>
+            <footer class="app-footer">
+                <p>本程序基于 AGPL-3.0 许可证发布。使用本程序的风险由使用者自行承担。</p>
+                <p>本程序仅在 GitHub 上分发：<a href="https://github.com/GamerNoTitle/BiliLive-Utility"
+                        target="_blank">https://github.com/GamerNoTitle/BiliLive-Utility</a></p>
+                <p>如果您在其他平台发现本程序，请注意谨防盗号以及受骗。</p>
+            </footer>
+        </div>
+
+        <!-- 关于页面模态框 -->
+        <div id="aboutModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-info-circle"></i> 关于 BiliLive-Utility</h2>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="about-content">
+                        <div class="about-section">
+                            <h3>开发者信息</h3>
+                            <p><strong>开发者：</strong>GamerNoTitle</p>
+                            <p><strong>GitHub：</strong><a href="https://github.com/GamerNoTitle"
+                                    target="_blank">https://github.com/GamerNoTitle</a></p>
+                            <p><strong>项目地址：</strong><a href="https://github.com/GamerNoTitle/BiliLive-Utility"
+                                    target="_blank">https://github.com/GamerNoTitle/BiliLive-Utility</a></p>
+                        </div>
+                        <div class="about-section">
+                            <h3>版本信息</h3>
+                            <p><strong>版本：</strong>v1.0.0</p>
+                            <p><strong>构建时间：</strong>2024-01-01</p>
+                        </div>
+                        <div class="about-section">
+                            <h3>免责声明</h3>
+                            <p>本项目仅供个人学习、研究和非商业性用途。用户在使用本工具时，需自行确保遵守相关法律法规，特别是与版权相关的法律条款。开发者不对因使用本工具而产生的任何版权纠纷或法律责任承担责任。请用户在使用时谨慎，确保其行为合法合规，并仅在有合法授权的情况下使用相关内容。
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- 加载遮罩 -->
-    <div id="loadingOverlay" class="loading-overlay hidden">
-        <div class="loading-spinner">
-            <i class="fas fa-spinner fa-spin"></i>
-            <p>处理中...</p>
+
+        <!-- 加载遮罩 -->
+        <div id="loadingOverlay" class="loading-overlay hidden">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>处理中...</p>
+            </div>
         </div>
-    </div>
 
-    <!-- Toast 容器 -->
-    <div id="toastContainer" class="toast-container"></div>
+        <!-- Toast 容器 -->
+        <div id="toastContainer" class="toast-container"></div>
+    </div>
 
     <script src="script.js"></script>
 </body>

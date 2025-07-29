@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bililive-utility"
-version = "2.0.0-pre1"
+version = "2.0.0-pre2"
 authors = [
   { name="GamerNoTitle", email="GamerNoTitle@outlook.com" },
 ]

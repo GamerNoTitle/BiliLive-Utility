@@ -62,7 +62,7 @@ def run_server(server: uvicorn.Server, sockets: list):
         server.run(sockets=sockets)
 
 
-def main():
+def main(debug: bool = False):
     """
     包含了所有的设置和启动逻辑的启动入口函数
     """
@@ -95,9 +95,12 @@ def main():
             url,
             width=1280,
             height=720,
+            easy_drag=True,
+            resizable=True,
+            frameless=True
         )
 
-        webview.start()
+        webview.start(icon="static/icon.ico", debug=debug)
 
 
 if __name__ == "__main__":

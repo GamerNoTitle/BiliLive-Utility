@@ -84,6 +84,12 @@ class BiliLiveUtility {
         document.getElementById("aboutBtn").addEventListener("click", () => this.showAbout())
         document.querySelector(".modal-close").addEventListener("click", () => this.hideAbout())
 
+        // 关闭按钮
+        document.getElementById("closeBtn").addEventListener("click", () => {
+            fetch("/api/application/exit")
+            this.showStatus("正在退出应用...", "info")
+        })
+
         // 点击模态框外部关闭
         document.getElementById("aboutModal").addEventListener("click", (e) => {
             if (e.target === document.getElementById("aboutModal")) {
@@ -93,12 +99,18 @@ class BiliLiveUtility {
     }
 
     async checkFirstVisit() {
-        // 检查是否是首次访问
-        const firstAccess = true
-        const data = await (await fetch("/api/application/info")).json().then(data => data.data.application)
+        // 检查是否是首次访问以及初始化
+        var firstAccess = true
+        const data = await (await fetch("/api/application/info")).json().then(data => data.data)
+        this.isLive = data.account.is_live || false
+        if (this.isLive) {
+            const button = document.getElementById("liveToggle")
+            button.innerHTML = '<i class="fas fa-stop"></i> 停播'
+            button.classList.add("stop")
+        }
         if (data.first_access === undefined) {
         } else {
-            const firstAccess = data.first_access
+            firstAccess = data.first_access
         }
         const version = data.version
         if (!firstAccess) {
@@ -116,7 +128,9 @@ class BiliLiveUtility {
     }
 
     rejectDisclaimer() {
-        window.close()
+        fetch("/api/application/disagree")
+        document.getElementById("disclaimerModal").style.display = "none"
+        this.showToast("用户拒绝免责声明，程序即将退出", "error")
     }
 
     async checkLoginStatus() {

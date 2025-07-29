@@ -72,6 +72,17 @@ body {
     background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%);
 }
 
+.btn-close {
+    background: transparent;
+    color: red;
+    border: 2px solid red;
+}
+
+.btn-close:hover {
+    background: red;
+    color: white;
+}
+
 /* 模态框样式 */
 .modal {
     position: fixed;
