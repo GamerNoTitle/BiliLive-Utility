@@ -108,11 +108,11 @@ class BiliLiveUtility {
             button.innerHTML = '<i class="fas fa-stop"></i> 停播'
             button.classList.add("stop")
         }
-        if (data.first_access === undefined) {
+        if (data.application.first_access === undefined) {
         } else {
-            firstAccess = data.first_access
+            firstAccess = data.application.first_access
         }
-        const version = data.version
+        const version = data.application.version
         if (!firstAccess) {
             document.getElementById("disclaimerModal").style.display = "flex"
         } else {
@@ -337,12 +337,14 @@ class BiliLiveUtility {
                 const data = await response.json()
                 this.populateRoomData(data)
                 this.showStatus("成功获取直播间信息！", "success")
+                this.showToast("直播间信息已加载", "success")
             } else {
                 throw new Error("获取直播间信息失败")
             }
         } catch (error) {
             console.error("获取直播间信息失败:", error)
             this.showStatus("获取直播间信息失败！", "error")
+            this.showToast("获取直播间信息失败", "error")
         }
     }
 
@@ -506,6 +508,7 @@ class BiliLiveUtility {
             const areaId = document.getElementById("childArea").value
             if (!areaId) {
                 this.showStatus("请先获取直播间信息后再开播！", "error")
+                this.showToast("请先获取直播间信息后再开播！", "error")
                 this.showLoading(false)
                 return
             }

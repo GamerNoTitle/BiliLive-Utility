@@ -90,6 +90,14 @@ def main(debug: bool = False):
         server_thread.start()
 
         window_title = "BiliLive Utility"
+        webview.settings = {
+            "ALLOW_DOWNLOADS": True,
+            "ALLOW_FILE_URLS": True,
+            "OPEN_EXTERNAL_LINKS_IN_BROWSER": True,
+            "OPEN_DEVTOOLS_IN_DEBUG": True,
+            "REMOTE_DEBUGGING_PORT": None,
+            'IGNORE_SSL_ERRORS': False
+        }
         webview.create_window(
             window_title,
             url,
@@ -97,7 +105,7 @@ def main(debug: bool = False):
             height=720,
             easy_drag=True,
             resizable=True,
-            frameless=True
+            frameless=True,
         )
 
         webview.start(icon="static/icon.ico", debug=debug)
