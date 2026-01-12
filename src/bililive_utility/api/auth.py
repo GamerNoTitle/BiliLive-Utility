@@ -50,3 +50,11 @@ async def get_credentials():
         return {"success": True, "data": {"cookies": cookies, "room_id": room_id}}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@router.get("/logout", summary="退出登录")
+async def logout():
+    try:
+        await bilibili_api.logout()
+        return {"success": True, "data": {"message": "已退出登录"}}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

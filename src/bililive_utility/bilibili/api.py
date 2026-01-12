@@ -250,3 +250,38 @@ async def get_pc_link_build() -> Tuple[str, str]:
             version = "7.19.0.1000"
             build = "1000"
     return version, build
+
+async def logout() -> bool:
+    """退出登录，清除本地存储的 Cookies 和房间 ID 信息"""
+    LOGOUT_URL = "https://passport.bilibili.com/login/exit/v2"
+    CSRF = bili_client.cookies.get("bili_jct")
+    if not CSRF:
+        raise ValueError("Cookies 中缺少 'bili_jct'，无法执行操作")
+    _headers = {
+        "Cookie": cookie_dict_to_string(dict(bili_client.cookies)),
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Referer": "https://www.bilibili.com/",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+    }
+    resp = await bili_client.post(
+        LOGOUT_URL,
+        headers=_headers,
+        data={"biliCSRF": CSRF, "gourl": "https://www.bilibili.com/"}
+    )
+    if not await check_login_status():
+        # 删除本地存储的 Cookies 和房间 ID 信息
+        CACHE_PATH_ROOM_ID = CACHE_PATH / "room_id"
+        if CACHE_PATH_ROOM_ID.exists():
+            CACHE_PATH_ROOM_ID.unlink()
+        SESSION_PATH = CACHE_PATH / "session"
+        if SESSION_PATH.exists():
+            SESSION_PATH.unlink()
+        # 清空对应文件
+        with open(SESSION_PATH, "w") as f:
+            f.write("")
+        with open(CACHE_PATH_ROOM_ID, "w") as f:
+            f.write("")
+        # 删除 session 中的 cookies
+        bili_client.cookies.clear()
+        return True
+    return False

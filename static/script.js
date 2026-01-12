@@ -95,6 +95,9 @@ class BiliLiveUtility {
             this.showStatus("正在退出应用...", "info")
         })
 
+        // 退出登录按钮
+        document.getElementById("logoutBtn").addEventListener("click", () => this.logout())
+
         // 点击模态框外部关闭
         document.getElementById("aboutModal").addEventListener("click", (e) => {
             if (e.target === document.getElementById("aboutModal")) {
@@ -669,6 +672,18 @@ class BiliLiveUtility {
     hideAbout() {
         document.getElementById("aboutModal").style.display = "none"
     }
+
+    logout() {
+        fetch("/api/auth/logout").then((data) => {
+            if (data.ok) {
+                // 返回登录页面
+                this.showToast("已退出登录", "success")
+                this.showLoginPage()
+            } else {
+                this.showToast("退出登录失败", "error")
+            }
+        })
+    };
 }
 
 // 初始化应用
