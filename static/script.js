@@ -84,6 +84,11 @@ class BiliLiveUtility {
         document.getElementById("aboutBtn").addEventListener("click", () => this.showAbout())
         document.querySelector(".modal-close").addEventListener("click", () => this.hideAbout())
 
+        // 人脸验证
+        document.querySelector(".fr-modal-close").addEventListener("click", () => {
+            document.getElementById("faceRecognizeModal").classList.add("hidden");
+        });
+
         // 关闭按钮
         document.getElementById("closeBtn").addEventListener("click", () => {
             fetch("/api/application/exit")
@@ -527,7 +532,16 @@ class BiliLiveUtility {
             if (response.ok) {
                 if (isStarting) {
                     const data = await response.json()
-                    this.handleLiveStart(data)
+                    if (data.data.qr) {
+                        const faceRecognitionModal = document.getElementById("faceRecognizeModal");
+                        const qrContainer = document.getElementById("faceRecognizeQR");
+                        const qrImage = await (await fetch("/api/auth/getqr?link=" + encodeURIComponent(data.data.qr))).json().then(data => data.data);
+                        qrContainer.setAttribute("src", `data:image/png;base64,${qrImage}`);
+                        faceRecognitionModal.classList.remove("hidden");
+                        this.showStatus("请使用B站手机客户端扫码进行人脸验证", "warning");
+                    } else {
+                        this.handleLiveStart(data)
+                    }
                 } else {
                     this.handleLiveStop()
                 }

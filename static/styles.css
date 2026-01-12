@@ -137,7 +137,8 @@ body {
     gap: 10px;
 }
 
-.modal-close {
+.modal-close,
+.fr-modal-close {
     background: none;
     border: none;
     font-size: 24px;

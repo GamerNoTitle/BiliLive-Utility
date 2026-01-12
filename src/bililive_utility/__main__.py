@@ -105,7 +105,7 @@ def main(debug: bool = False):
             height=720,
             easy_drag=True,
             resizable=True,
-            frameless=True,
+            frameless=False,
         )
 
         webview.start(icon="static/icon.ico", debug=debug)

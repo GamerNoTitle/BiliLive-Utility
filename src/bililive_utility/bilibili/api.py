@@ -177,9 +177,11 @@ async def start_live(area) -> Dict[str, Any]:
     )
     resp.raise_for_status()
     start_resp = resp.json()
-
+    print(start_resp)
     if start_resp.get("code") == 0:
         return start_resp.get("data", {})
+    elif start_resp.get("code") == 60024:   # 快手事件之后需要人脸验证
+        return {"qr": start_resp.get("data", {}).get("qr", "")}
     raise Exception(f"{start_resp.get('message', '未知错误')}")
 
 

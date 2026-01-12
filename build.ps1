@@ -16,4 +16,4 @@ uv run pyinstaller `
     --hidden-import "uvicorn.lifespan" `
     --hidden-import "uvicorn.lifespan.on" `
     --icon="static/favicon.ico" `
-    src/bililive_utility/__main__.py
+    src/bililive_utility/launcher.py

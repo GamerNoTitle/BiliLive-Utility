@@ -238,8 +238,6 @@
             </div>
         </div>
 
-
-
         <!-- 加载遮罩 -->
         <div id="loadingOverlay" class="loading-overlay hidden">
             <div class="loading-spinner">
@@ -250,6 +248,24 @@
 
         <!-- Toast 容器 -->
         <div id="toastContainer" class="toast-container"></div>
+    </div>
+
+    <div id="faceRecognizeModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-info-circle"></i> 人脸验证 </h2>
+                <button class="fr-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="about-content">
+                    <div class="about-section" align="center">
+                        <h3>本次开播需要人脸验证</h3>
+                        <img id="faceRecognizeQR" alt="人脸验证二维码" style="width: 60%; height: 60%;">
+                        <p>请使用 B 站手机 App 扫描二维码完成验证，验证完成后关闭此框并重新点击开播按钮即可</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>
