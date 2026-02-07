@@ -101,7 +101,6 @@ def main(debug: bool = False):
             url,
             width=1280,
             height=720,
-            easy_drag=True,
             resizable=True,
             frameless=False,
         )
