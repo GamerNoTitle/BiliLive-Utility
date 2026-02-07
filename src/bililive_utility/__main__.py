@@ -87,15 +87,10 @@ def main(debug: bool = False):
         server_thread.start()
 
         window_title = "BiliLive Utility"
-        webview.settings = {
-            "ALLOW_DOWNLOADS": True,
-            "ALLOW_FILE_URLS": True,
-            "OPEN_EXTERNAL_LINKS_IN_BROWSER": True,
-            "OPEN_DEVTOOLS_IN_DEBUG": True,
-            "REMOTE_DEBUGGING_PORT": None,
-            'IGNORE_SSL_ERRORS': False,
-            'SHOW_DEFAULT_MENUS': False,
-        }
+        webview.settings["ALLOW_DOWNLOADS"] = True
+        webview.settings["ALLOW_FILE_URLS"] = True
+        webview.settings["OPEN_EXTERNAL_LINKS_IN_BROWSER"] = True
+        webview.settings["OPEN_DEVTOOLS_IN_DEBUG"] = True
         webview.create_window(
             window_title,
             url,
