@@ -101,5 +101,5 @@ jobs:
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: BiliLive-Utility-v${{ needs.before-build.outputs.version }}-${{ matrix.artifact_suffix }}
+        name: BiliLive-Utility-${{ needs.before-build.outputs.version }}-${{ matrix.artifact_suffix }}
         path: dist/
