@@ -2,7 +2,7 @@ uv pip install -e .
 uv run pyinstaller \
     --name "BiliLive Utility" \
     --windowed \
-    --onefile \
+    --onedir \
     --noconfirm \
     --clean \
     --add-data "static:static" \
@@ -18,3 +18,9 @@ uv run pyinstaller \
     --hidden-import "uvicorn.lifespan.on" \
     --icon="static/favicon.icns" \
     src/bililive_utility/launcher.py
+
+# Sign the application bundle
+if [ "$(uname)" == "Darwin" ]; then
+    echo "Signing application bundle..."
+    codesign -s - -v -f --deep --entitlements scripts/entitlements.plist "dist/BiliLive Utility.app"
+fi
