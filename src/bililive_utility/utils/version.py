@@ -32,5 +32,5 @@ class Version(BaseModel):
 
 VERSION = Version(
     version=get_git_short_hash_from_library() or "__version__",
-    build=BUILD_TIME if BUILD_TIME != "__BUILD_TIME__" else "dev-" + str(datetime.now().isoformat())
+    build=BUILD_TIME if BUILD_TIME != "__BUILD_TIME__" else "dev-" + str(datetime.utcnow().isoformat())
 )
