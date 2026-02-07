@@ -96,7 +96,8 @@ def main(debug: bool = False):
             "OPEN_EXTERNAL_LINKS_IN_BROWSER": True,
             "OPEN_DEVTOOLS_IN_DEBUG": True,
             "REMOTE_DEBUGGING_PORT": None,
-            'IGNORE_SSL_ERRORS': False
+            'IGNORE_SSL_ERRORS': False,
+            'SHOW_DEFAULT_MENUS': False,
         }
         webview.create_window(
             window_title,
@@ -109,6 +110,7 @@ def main(debug: bool = False):
         )
 
         webview.start(icon="static/icon.ico", debug=debug)
+        # webview.start(debug=debug)
 
 
 if __name__ == "__main__":
