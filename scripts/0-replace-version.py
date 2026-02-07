@@ -28,7 +28,7 @@ else:
 target_file = Path("src/bililive_utility/utils/version.py")
 if target_file.exists():
     content = target_file.read_text(encoding="utf-8")
-    new_content = content.replace('"__version__"', f'"v{version}"')
+    new_content = content.replace('"__version__"', f'"{version}"')
     
     if content != new_content:
         target_file.write_text(new_content, encoding="utf-8")
