@@ -16,9 +16,9 @@ def get_git_short_hash_from_library() -> str | None:
         return "dev-" + head_commit.hexsha[:7] 
 
     except git.InvalidGitRepositoryError:
-        return "dev-unknown"
+        return None
     except Exception as e:
-        return "dev-unknown"
+        return None
 
 class Version(BaseModel):
     """
