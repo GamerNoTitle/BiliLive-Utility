@@ -4,7 +4,7 @@ rm -rf "BiliLive Utility"
 # Get version from environment variable if available
 VOLNAME="BiliLive Utility"
 if [ -n "$AG_VERSION" ]; then
-  VOLNAME="BiliLive Utility $AG_VERSION"
+  VOLNAME="BiliLive Utility v$AG_VERSION"
 fi
 
 create-dmg \
@@ -17,6 +17,6 @@ create-dmg \
   --hide-extension "BiliLive Utility.app" \
   --app-drop-link 500 185 \
   --background "../static/dmg-bg.png" \
-  "BiliLive Utility.dmg" \
+  "$VOLNAME.dmg" \
   "."
 rm -rf "BiliLive Utility.app"

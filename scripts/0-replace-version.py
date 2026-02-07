@@ -16,7 +16,7 @@ if not version:
         # Set output only if we read it from source
         if "GITHUB_OUTPUT" in os.environ:
             with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
-                print(f"version={version}", file=fh)
+                print(f"version=v{version}", file=fh)
                 
     except Exception as e:
         print(f"Error reading pyproject.toml: {e}")
@@ -28,7 +28,7 @@ else:
 target_file = Path("src/bililive_utility/utils/version.py")
 if target_file.exists():
     content = target_file.read_text(encoding="utf-8")
-    new_content = content.replace('"__version__"', f'"{version}"')
+    new_content = content.replace('"__version__"', f'"v{version}"')
     
     if content != new_content:
         target_file.write_text(new_content, encoding="utf-8")
