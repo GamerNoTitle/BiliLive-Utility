@@ -87,7 +87,14 @@ jobs:
       run: |
         python scripts/0-replace-version.py
 
+
+    - uses: gerlero/brew-install@v1
+      if: matrix.os == 'macos-15' || matrix.os == 'macos-15-intel'
+      with:
+        packages: create-dmg
     - name: Build Application
+      env:
+        AG_VERSION: ${{ needs.before-build.outputs.version }}
       run: ${{ matrix.build_cmd }}
 
     - name: Upload Build Artifact
