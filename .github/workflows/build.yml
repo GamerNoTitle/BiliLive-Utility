@@ -10,7 +10,26 @@ on:
   workflow_dispatch:
 
 jobs:
+  before-build:
+    name: Prepare Release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Get Version
+      id: get_version
+      run: python scripts/0-replace-version.py
+
   build:
+    needs: before-build
     name: Build on ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -62,8 +81,9 @@ jobs:
           echo "$PWD/.venv/bin" >> $GITHUB_PATH
         fi
 
-    - name: Update Version in Source
-      id: update_version
+    - name: Apply Version
+      env:
+        AG_VERSION: ${{ needs.before-build.outputs.version }}
       run: |
         python scripts/0-replace-version.py
 
@@ -73,5 +93,5 @@ jobs:
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: BiliLive-Utility-${{ matrix.artifact_suffix }}-${{ steps.update_version.outputs.version }}
-        path: dist/BiliLive Utility/
+        name: BiliLive-Utility-v${{ needs.before-build.outputs.version }}-${{ matrix.artifact_suffix }}
+        path: dist/

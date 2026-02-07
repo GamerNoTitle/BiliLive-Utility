@@ -2,6 +2,7 @@ uv pip install -e .
 uv run pyinstaller `
     --name "BiliLive Utility" `
     --windowed `
+    --onefile `
     --noconfirm `
     --clean `
     --add-data "static:static" `

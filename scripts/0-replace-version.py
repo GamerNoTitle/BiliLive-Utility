@@ -3,18 +3,26 @@ import os
 from pathlib import Path
 
 # Read version
-try:
-    with open("pyproject.toml", "rb") as f:
-        data = tomllib.load(f)
-    version = data["project"]["version"]
-    print(f"Found version: {version}")
-except Exception as e:
-    print(f"Error reading pyproject.toml: {e}")
-    exit(1)
+version = os.environ.get("AG_VERSION")
 
-# Set output
-with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
-    print(f"version={version}", file=fh)
+if not version:
+    print("Version not provided in env AG_VERSION, reading from pyproject.toml...")
+    try:
+        with open("pyproject.toml", "rb") as f:
+            data = tomllib.load(f)
+        version = data["project"]["version"]
+        print(f"Found version from toml: {version}")
+        
+        # Set output only if we read it from source
+        if "GITHUB_OUTPUT" in os.environ:
+            with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+                print(f"version={version}", file=fh)
+                
+    except Exception as e:
+        print(f"Error reading pyproject.toml: {e}")
+        exit(1)
+else:
+    print(f"Using version from env: {version}")
 
 # Update version
 target_file = Path("src/bililive_utility/utils/version.py")
