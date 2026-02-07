@@ -13,12 +13,12 @@ def get_git_short_hash_from_library() -> str | None:
         
         head_commit = repo.head.commit
 
-        return head_commit.hexsha[:7] 
+        return "dev-" + head_commit.hexsha[:7] 
 
     except git.InvalidGitRepositoryError:
-        return None
+        return "dev-unknown"
     except Exception as e:
-        return None
+        return "dev-unknown"
 
 class Version(BaseModel):
     """

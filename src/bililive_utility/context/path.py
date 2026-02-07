@@ -22,4 +22,5 @@ def get_resource_path() -> str:
     else:
         # 开发环境
         base_path = os.path.abspath(".")
+    print(f"Resource base path: {base_path}")
     return base_path
