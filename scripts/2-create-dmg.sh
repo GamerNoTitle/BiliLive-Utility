@@ -4,7 +4,7 @@ rm -rf "BiliLive Utility"
 # Get version from environment variable if available
 VOLNAME="BiliLive Utility"
 if [ -n "$AG_VERSION" ]; then
-  VOLNAME="BiliLive Utility v$AG_VERSION"
+  VOLNAME="BiliLive Utility $AG_VERSION"
 fi
 
 create-dmg \
