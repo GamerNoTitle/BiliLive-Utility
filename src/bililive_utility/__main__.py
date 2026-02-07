@@ -63,6 +63,7 @@ def main(debug: bool = False):
     """
     包含了所有的设置和启动逻辑的启动入口函数
     """
+    print(f"Running BiliLive-Utility Version: {VERSION}")
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock4:
         sock4.bind(("127.0.0.1", 0))
         sock4.listen()
