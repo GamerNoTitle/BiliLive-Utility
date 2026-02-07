@@ -91,6 +91,7 @@ def main(debug: bool = False):
         webview.settings["ALLOW_FILE_URLS"] = True
         webview.settings["OPEN_EXTERNAL_LINKS_IN_BROWSER"] = True
         webview.settings["OPEN_DEVTOOLS_IN_DEBUG"] = True
+        print(webview.settings)
         webview.create_window(
             window_title,
             url,

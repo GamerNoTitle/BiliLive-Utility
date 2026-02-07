@@ -1,4 +1,7 @@
 uv pip install -e .
+
+BUILD_TIME = $(date '+%Y%m%d%H%M%S')
+
 uv run pyinstaller \
     --name "BiliLive Utility" \
     --windowed \
@@ -24,10 +27,16 @@ uv run pyinstaller \
 if [ "$(uname)" == "Darwin" ]; then
     echo "Processing application bundle for ARM64..."
     APP_PATH="dist/BiliLive Utility.app"
+    PLIST_PATH="$APP_PATH/Contents/Info.plist"
+    VERSION="$AG_VERSION"
 
     # lean extended attributes
     echo "Files cleanup..."
     xattr -cr "$APP_PATH"
+
+    # change version number in plist
+    plutil -replace CFBundleShortVersionString -string "$VERSION" "$PLIST_PATH"
+    plutil -replace CFBundleVersion -string "$VERSION-$BUILD_TIME" "$PLIST_PATH"
 
     # Deep sign with entitlements and hardened runtime options
     echo "Signing with hardened runtime..."
