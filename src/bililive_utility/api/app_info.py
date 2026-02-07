@@ -14,6 +14,7 @@ async def get_application_info(
     app_info = {
         "first_access": os.path.exists(CACHE_PATH / "access"),
         "version": VERSION.version,
+        "build": VERSION.build,
     }
 
     try:
