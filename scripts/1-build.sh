@@ -16,11 +16,20 @@ uv run pyinstaller \
     --hidden-import "uvicorn.protocols.websockets.auto" \
     --hidden-import "uvicorn.lifespan" \
     --hidden-import "uvicorn.lifespan.on" \
+    --osx-bundle-identifier "paff.pesywu.biliutil" \
     --icon="static/favicon.icns" \
     src/bililive_utility/launcher.py
 
 # Sign the application bundle
 if [ "$(uname)" == "Darwin" ]; then
-    echo "Signing application bundle..."
-    codesign -s - -v -f --deep --entitlements scripts/entitlements.plist "dist/BiliLive Utility.app"
+    echo "Processing application bundle for ARM64..."
+    APP_PATH="dist/BiliLive Utility.app"
+
+    # lean extended attributes
+    echo "Files cleanup..."
+    xattr -cr "$APP_PATH"
+
+    # Deep sign with entitlements and hardened runtime options
+    echo "Signing with hardened runtime..."
+    codesign -s - -v -f --deep --options runtime --timestamp --entitlements scripts/entitlements.plist "$APP_PATH"
 fi
