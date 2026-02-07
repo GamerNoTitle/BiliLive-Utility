@@ -81,13 +81,6 @@ jobs:
           echo "$PWD/.venv/bin" >> $GITHUB_PATH
         fi
 
-    - name: Apply Version
-      env:
-        AG_VERSION: ${{ needs.before-build.outputs.version }}
-      run: |
-        python scripts/0-replace-version.py
-
-
     - uses: gerlero/brew-install@v1
       if: matrix.os == 'macos-15' || matrix.os == 'macos-15-intel'
       with:
