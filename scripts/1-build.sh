@@ -1,8 +1,11 @@
 uv pip install -e .
+
+BUILD_TIME = $(date '+%Y%m%d%H%M%S')
+
 uv run pyinstaller \
     --name "BiliLive Utility" \
     --windowed \
-    --onefile \
+    --onedir \
     --noconfirm \
     --clean \
     --add-data "static:static" \
@@ -16,5 +19,26 @@ uv run pyinstaller \
     --hidden-import "uvicorn.protocols.websockets.auto" \
     --hidden-import "uvicorn.lifespan" \
     --hidden-import "uvicorn.lifespan.on" \
+    --osx-bundle-identifier "paff.pesywu.biliutil" \
     --icon="static/favicon.icns" \
     src/bililive_utility/launcher.py
+
+# Sign the application bundle
+if [ "$(uname)" == "Darwin" ]; then
+    echo "Processing application bundle for ARM64..."
+    APP_PATH="dist/BiliLive Utility.app"
+    PLIST_PATH="$APP_PATH/Contents/Info.plist"
+    VERSION="$AG_VERSION"
+
+    # lean extended attributes
+    echo "Files cleanup..."
+    xattr -cr "$APP_PATH"
+
+    # change version number in plist
+    plutil -replace CFBundleShortVersionString -string "$VERSION" "$PLIST_PATH"
+    plutil -replace CFBundleVersion -string "$VERSION-$BUILD_TIME" "$PLIST_PATH"
+
+    # Deep sign with entitlements and hardened runtime options
+    echo "Signing with hardened runtime..."
+    codesign -s - -v -f --deep --options runtime --timestamp --entitlements scripts/entitlements.plist "$APP_PATH"
+fi

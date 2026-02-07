@@ -63,6 +63,7 @@ def main(debug: bool = False):
     """
     包含了所有的设置和启动逻辑的启动入口函数
     """
+    print(f"Running BiliLive-Utility Version: {VERSION}")
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock4:
         sock4.bind(("127.0.0.1", 0))
         sock4.listen()
@@ -87,21 +88,16 @@ def main(debug: bool = False):
         server_thread.start()
 
         window_title = "BiliLive Utility"
-        webview.settings = {
-            "ALLOW_DOWNLOADS": True,
-            "ALLOW_FILE_URLS": True,
-            "OPEN_EXTERNAL_LINKS_IN_BROWSER": True,
-            "OPEN_DEVTOOLS_IN_DEBUG": True,
-            "REMOTE_DEBUGGING_PORT": None,
-            'IGNORE_SSL_ERRORS': False,
-            'SHOW_DEFAULT_MENUS': False,
-        }
+        webview.settings["ALLOW_DOWNLOADS"] = True
+        webview.settings["ALLOW_FILE_URLS"] = True
+        webview.settings["OPEN_EXTERNAL_LINKS_IN_BROWSER"] = True
+        webview.settings["OPEN_DEVTOOLS_IN_DEBUG"] = True
+        print(webview.settings)
         webview.create_window(
             window_title,
             url,
             width=1280,
             height=720,
-            easy_drag=True,
             resizable=True,
             frameless=False,
         )
