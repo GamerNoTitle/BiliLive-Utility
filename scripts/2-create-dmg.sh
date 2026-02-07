@@ -9,6 +9,7 @@ fi
 
 create-dmg \
   --volname "$VOLNAME" \
+  --volicon "../static/favicon.icns" \
   --window-pos 400 200 \
   --window-size 660 400 \
   --icon-size 100 \

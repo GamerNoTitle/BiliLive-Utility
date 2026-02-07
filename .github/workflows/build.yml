@@ -98,14 +98,6 @@ jobs:
         AG_VERSION: ${{ needs.before-build.outputs.version }}
       run: ${{ matrix.build_cmd }}
 
-    - name: Set DMG icon
-      if: matrix.os == 'macos-15' || matrix.os == 'macos-15-intel'
-      run: |
-        chmod +x scripts/3-seticon
-        for dmg in dist/*.dmg; do
-          ./scripts/3-seticon static/favicon.icns "$dmg"
-        done
-
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
