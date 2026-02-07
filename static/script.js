@@ -121,12 +121,15 @@ class BiliLiveUtility {
             firstAccess = data.application.first_access
         }
         const version = data.application.version
+        const build = data.application.build
         if (!firstAccess) {
             document.getElementById("disclaimerModal").style.display = "flex"
         } else {
             this.checkLoginStatus()
         }
-        document.getElementById("version").textContent = `${version}`
+        document.getElementById("version").textContent = version
+        document.getElementById("meta-version").textContent = version
+        document.getElementById("meta-build").textContent = build
     }
 
     async acceptDisclaimer() {
@@ -670,7 +673,7 @@ class BiliLiveUtility {
     }
 
     hideAbout() {
-        document.getElementById("aboutModal").style.display = "none"
+        document.getElementById("aboutModal").classList.add("hidden")
     }
 
     logout() {

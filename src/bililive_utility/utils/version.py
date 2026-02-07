@@ -1,5 +1,8 @@
 import git
+from datetime import datetime
 from pydantic import BaseModel
+
+BUILD_TIME = "__BUILD_TIME__"
 
 def get_git_short_hash_from_library() -> str | None:
     """
@@ -25,7 +28,9 @@ class Version(BaseModel):
     版本信息模型。
     """
     version: str
+    build: str
 
 VERSION = Version(
-    version=get_git_short_hash_from_library() or "__version__"
+    version=get_git_short_hash_from_library() or "__version__",
+    build=BUILD_TIME if BUILD_TIME != "__BUILD_TIME__" else "dev-" + str(datetime.utcnow().isoformat())
 )

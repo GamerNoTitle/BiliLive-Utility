@@ -1,7 +1,5 @@
 uv pip install -e .
 
-BUILD_TIME=$(date '+%Y%m%d%H%M%S')
-
 uv run pyinstaller \
     --name "BiliLive Utility" \
     --windowed \
@@ -29,12 +27,14 @@ if [ "$(uname)" == "Darwin" ]; then
     APP_PATH="dist/BiliLive Utility.app"
     PLIST_PATH="$APP_PATH/Contents/Info.plist"
     VERSION="$AG_VERSION"
+    BUILD_TIME="$AG_BUILD_TIME"
 
     # lean extended attributes
     echo "Files cleanup..."
     xattr -cr "$APP_PATH"
 
     # change version number in plist
+    echo "Updating version in Info.plist to $VERSION and build time to $BUILD_TIME..."
     plutil -replace CFBundleShortVersionString -string "$VERSION" "$PLIST_PATH"
     plutil -replace CFBundleVersion -string "$VERSION-$BUILD_TIME" "$PLIST_PATH"
 

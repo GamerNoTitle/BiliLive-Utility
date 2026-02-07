@@ -41,7 +41,7 @@ wheels = [
 
 [[package]]
 name = "bililive-utility"
-version = "2.2.1a3"
+version = "2.3.1"
 source = { editable = "." }
 dependencies = [
     { name = "buildozer" },

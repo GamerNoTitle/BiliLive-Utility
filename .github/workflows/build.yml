@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.get_version.outputs.version }}
+      build_time: ${{ steps.get_version.outputs.build_time }}
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
@@ -84,6 +85,7 @@ jobs:
     - name: Apply Version
       env:
         AG_VERSION: ${{ needs.before-build.outputs.version }}
+        AG_BUILD_TIME: ${{ needs.before-build.outputs.build_time }}
       run: |
         python scripts/0-replace-version.py
 
