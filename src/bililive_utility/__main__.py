@@ -9,10 +9,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import HTTPException
-from pathlib import Path
 
 from .api import auth, room, live, app_info
 from .utils.version import VERSION
+from .context.path import get_resource_path
 
 # --- 应用初始化 ---
 app = FastAPI(
@@ -46,12 +46,9 @@ app.include_router(live.router)
 app.include_router(app_info.router)
 
 # --- 静态文件服务 ---
-static_path = Path(__file__).parent.parent.parent / "static"
-if static_path.exists():
-    app.mount("/", StaticFiles(directory=static_path, html=True), name="static")
-else:
-    print(f"警告: 未找到静态文件目录 {static_path}，前端将不可用。")
-
+static_path = os.path.join(get_resource_path(), "static")
+print(f"Static files path: {static_path}")
+app.mount("/", StaticFiles(directory=static_path, html=True), name="static")
 
 # --- 启动函数 ---
 def run_server(server: uvicorn.Server, sockets: list):
@@ -96,7 +93,8 @@ def main(debug: bool = False):
             "OPEN_EXTERNAL_LINKS_IN_BROWSER": True,
             "OPEN_DEVTOOLS_IN_DEBUG": True,
             "REMOTE_DEBUGGING_PORT": None,
-            'IGNORE_SSL_ERRORS': False
+            'IGNORE_SSL_ERRORS': False,
+            'SHOW_DEFAULT_MENUS': False,
         }
         webview.create_window(
             window_title,
@@ -109,6 +107,7 @@ def main(debug: bool = False):
         )
 
         webview.start(icon="static/icon.ico", debug=debug)
+        # webview.start(debug=debug)
 
 
 if __name__ == "__main__":
