@@ -1,6 +1,6 @@
 uv pip install -e .
 
-BUILD_TIME = $(date '+%Y%m%d%H%M%S')
+BUILD_TIME=$(date '+%Y%m%d%H%M%S')
 
 uv run pyinstaller \
     --name "BiliLive Utility" \
