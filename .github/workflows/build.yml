@@ -11,6 +11,7 @@ on:
 
 jobs:
   build:
+    name: Build on ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -19,78 +20,58 @@ jobs:
           - name: Windows x86_64
             os: windows-latest
             artifact_suffix: Windows-amd64
-            build_method: standard
+            build_cmd: ./scripts/1-build.ps1
           - name: MacOS x86_64
             os: macos-15-intel
             artifact_suffix: macOS-amd64
-            build_method: standard
-
+            build_cmd: |
+              chmod +x scripts/1-build.sh
+              chmod +x scripts/2-create-dmg.sh
+              ./scripts/1-build.sh
+              ./scripts/2-create-dmg.sh
           - name: MacOS aarch64
             os: macos-15
             artifact_suffix: macOS-arm64
-            build_method: standard
+            build_cmd: |
+              chmod +x scripts/1-build.sh
+              chmod +x scripts/2-create-dmg.sh
+              ./scripts/1-build.sh
+              ./scripts/2-create-dmg.sh
 
-    name: Build on ${{ matrix.name }}
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
       with:
         ref: ${{ github.ref }}
 
-    - name: Setup Python and uv
+    - name: Setup Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'
-        cache: 'pip'
-    - run: python -m pip install --upgrade pip uv
 
-    - name: Install Dependencies
-      run: uv sync
-
-    - name: Update Version File and Get Version
-      id: get_version
+    - name: Install uv and Dependencies
       shell: bash
       run: |
-        pip install toml
-        version=$(python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])")
-        echo "Successfully found version: $version"
-        echo "version=$version" >> $GITHUB_OUTPUT
-
-    - name: Replace Version in Python File using sed
-      shell: bash
-      run: |
-        VERSION_NUMBER="${{ steps.get_version.outputs.version }}"
-        VERSION_FILE="src/bililive_utility/utils/version.py"
+        python -m pip install uv
+        uv sync
         
-        NEW_LINE="VERSION = Version(version=\"$VERSION_NUMBER\")"
+        # Add .venv to PATH
+        if [ "$RUNNER_OS" == "Windows" ]; then
+          echo "$PWD/.venv/Scripts" >> $GITHUB_PATH
+        else
+          echo "$PWD/.venv/bin" >> $GITHUB_PATH
+        fi
 
-        echo "Writing version '$VERSION_NUMBER' to $VERSION_FILE"
-        sed -i "/^VERSION = Version(/,/^)/c\\$NEW_LINE" "$VERSION_FILE"
-
-        echo "File content replacement completed:"
-        cat "$VERSION_FILE"
-
-    - name: Build Application with PyInstaller (Windows)
-      if: matrix.os == 'windows-latest'
+    - name: Update Version in Source
+      id: update_version
       run: |
-        ./script/build.ps1
+        python scripts/0-replace-version.py
 
-    - name: Build Application with PyInstaller (MacOS)
-      if: matrix.os == 'macos-15' || matrix.os == 'macos-15-intel'
-      run: |
-        ./script/build.sh
-        
-    - name: Create DMG for MacOS
-      if: matrix.os == 'macos-15' || matrix.os == 'macos-15-intel'
-      run: |
-        ./script/create-dmg.sh
+    - name: Build Application
+      run: ${{ matrix.build_cmd }}
 
-    # - name: Move static folder
-    #   run: |
-    #     mv "dist/BiliLive Utility/_internal/static" "dist/BiliLive Utility/static"
-    #   shell: bash
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: BiliLive-Utility-${{ matrix.artifact_suffix }}-${{ steps.get_version.outputs.version }}
+        name: BiliLive-Utility-${{ matrix.artifact_suffix }}-${{ steps.update_version.outputs.version }}
         path: dist/BiliLive Utility/
