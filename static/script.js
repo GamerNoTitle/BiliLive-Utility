@@ -673,7 +673,7 @@ class BiliLiveUtility {
     }
 
     hideAbout() {
-        document.getElementById("aboutModal").style.display = "none"
+        document.getElementById("aboutModal").classList.add("hidden")
     }
 
     logout() {
