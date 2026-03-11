@@ -1,5 +1,4 @@
-import git
-from datetime import datetime
+from datetime import datetime, timezone
 from pydantic import BaseModel
 
 BUILD_TIME = "__BUILD_TIME__"
@@ -12,12 +11,14 @@ def get_git_short_hash_from_library() -> str | None:
         str: 短哈希值，如果失败则返回 None。
     """
     try:
+        import git
         repo = git.Repo(search_parent_directories=True)
         
         head_commit = repo.head.commit
 
         return "dev-" + head_commit.hexsha[:7] 
-
+    except ImportError:
+        return None
     except git.InvalidGitRepositoryError:
         return None
     except Exception as e:
@@ -32,5 +33,5 @@ class Version(BaseModel):
 
 VERSION = Version(
     version=get_git_short_hash_from_library() or "__version__",
-    build=BUILD_TIME if BUILD_TIME != "__BUILD_TIME__" else "dev-" + str(datetime.utcnow().isoformat())
+    build=BUILD_TIME if BUILD_TIME != "__BUILD_TIME__" else "dev-" + str(datetime.now(timezone.utc).isoformat())
 )
