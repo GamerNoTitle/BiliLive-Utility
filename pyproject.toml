@@ -9,11 +9,12 @@ authors = [
   { name="GamerNoTitle", email="GamerNoTitle@outlook.com" },
 ]
 description = "BiliLive Utility is a tool that helps you manage your Bilibili live streams, including features like QR code login, stream management, and more, without being trapped by 5k fans requirement."
+license = "AGPL-3.0-only"
 readme = "README.md"
 requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
     "Operating System :: OS Independent",
 ]
 dependencies = [
