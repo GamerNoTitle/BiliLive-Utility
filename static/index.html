@@ -9,6 +9,37 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://font.webcache.cn/google/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" onerror="this.onerror=null;this.href='https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        // GitHub Alerts 扩展
+        if (typeof marked !== "undefined") {
+            const alertRegex = /^>\s*\[!(note|tip|important|warning|caution)\]\s*\r?\n((?:>.*\r?\n?)*)/im;
+            const alertIcons = { note: "info-circle", tip: "lightbulb", important: "exclamation-circle", warning: "exclamation-triangle", caution: "exclamation-circle" };
+            const alertTitles = { note: "Note", tip: "Tip", important: "Important", warning: "Warning", caution: "Caution" };
+
+            marked.use({
+                extensions: [{
+                    name: "githubAlert",
+                    level: "block",
+                    start(src) { return src.match(/>\s*\[/im)?.index; },
+                    tokenizer(src) {
+                        const match = alertRegex.exec(src);
+                        if (match) {
+                            const type = match[1].toLowerCase();
+                            const body = match[2].replace(/^>\s?/gm, "").replace(/\r/g, "").trim();
+                            return { type: "githubAlert", raw: match[0], alertType: type, alertBody: body };
+                        }
+                    },
+                    renderer(token) {
+                        const icon = alertIcons[token.alertType];
+                        const title = alertTitles[token.alertType];
+                        const content = marked.parse(token.alertBody);
+                        return `<div class="markdown-alert markdown-alert-${token.alertType}"><p class="markdown-alert-title"><i class="fas fa-${icon}"></i> ${title}</p>${content}</div>`;
+                    },
+                }],
+            });
+        }
+    </script>
 </head>
 
 <body>
@@ -229,6 +260,14 @@
                         <h3>版本信息</h3>
                         <p><strong>版本：</strong><metadata id="meta-version">__version__</metadata></p>
                         <p><strong>构建时间：</strong><metadata id="meta-build">__build__</metadata></p>
+                        <div style="margin-top: 10px; display: flex; gap: 8px;">
+                            <button id="checkUpdateBtn" class="btn btn-outline">
+                                <i class="fas fa-sync-alt"></i> 检查更新
+                            </button>
+                            <button id="checkPreReleaseBtn" class="btn btn-outline">
+                                <i class="fas fa-flask"></i> 检查预览版更新
+                            </button>
+                        </div>
                     </div>
                     <div class="about-section">
                         <h3>免责声明</h3>
@@ -265,6 +304,35 @@
                         <p>请使用 B 站手机 App 扫描二维码完成验证，验证完成后关闭此框并重新点击开播按钮即可</p>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 更新提示弹窗 -->
+    <div id="updateModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-arrow-circle-up"></i> 发现新版本</h2>
+                <button class="modal-close" onclick="document.getElementById('updateModal').classList.add('hidden')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="about-content">
+                    <div class="about-section">
+                        <p><strong>当前版本：</strong><span id="currentVersion"></span></p>
+                        <p><strong>最新版本：</strong><span id="updateVersion"></span></p>
+                        <p><strong>发布时间：</strong><span id="updatePublishedAt"></span></p>
+                        <h4>更新日志</h4>
+                        <div id="updateBody" class="update-body markdown-body"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="updateGoBtn" class="btn btn-primary">
+                    <i class="fas fa-external-link-alt"></i> 前往更新
+                </button>
+                <button id="updateIgnoreBtn" class="btn btn-secondary">
+                    <i class="fas fa-eye-slash"></i> 忽略此版本
+                </button>
             </div>
         </div>
     </div>

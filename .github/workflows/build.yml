@@ -73,7 +73,7 @@ jobs:
       shell: bash
       run: |
         python -m pip install uv
-        uv sync
+        uv sync --extra build
         
         # Add .venv to PATH
         if [ "$RUNNER_OS" == "Windows" ]; then

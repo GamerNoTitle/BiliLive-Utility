@@ -3,8 +3,10 @@ import urllib.parse
 from typing import Dict, Any
 
 # --- 常量 ---
-APPKEY = "aae92bc66f3edfab"
-APPSEC = "af125a0d5279fd576c1b4418a3e8276d"
+APPKEY = "aa1e74ee4874176e"
+APPSEC = "54e6a9a31b911cd5fc0daa66ebf94bc4"
+# 以上 APPKEY 和 APPSEC 来源于 B 站官方 Election 客户端
+
 QR_CODE_GENERATE_URL = (
     "https://passport.bilibili.com/x/passport-login/web/qrcode/generate"
 )
