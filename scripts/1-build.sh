@@ -17,7 +17,7 @@ uv run pyinstaller \
     --hidden-import "uvicorn.protocols.websockets.auto" \
     --hidden-import "uvicorn.lifespan" \
     --hidden-import "uvicorn.lifespan.on" \
-    --osx-bundle-identifier "paff.pesywu.biliutil" \
+    --osx-bundle-identifier "com.github.gamernotitle.bililive-utility" \
     --icon="static/favicon.icns" \
     src/bililive_utility/launcher.py
 
