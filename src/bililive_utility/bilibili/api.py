@@ -1,11 +1,10 @@
 import time
 import asyncio
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, List, Tuple, Optional
 
 from .session import bili_client, save_cookies
 from .core import (
     get_sign,
-    parse_cookie_string,
     cookie_dict_to_string,
     QR_CODE_GENERATE_URL,
     QR_CODE_POLL_URL,
@@ -13,6 +12,34 @@ from .core import (
     APPSEC,
 )
 from ..context.path import CACHE_PATH
+
+_cached_room_id: Optional[str] = None
+
+
+def get_cached_room_id() -> str:
+    """获取 room_id"""
+    global _cached_room_id
+    if _cached_room_id is not None:
+        return _cached_room_id
+    room_id_path = CACHE_PATH / "room_id"
+    if room_id_path.exists():
+        _cached_room_id = room_id_path.read_text().strip()
+        return _cached_room_id
+    return ""
+
+
+def _persist_room_id(room_id: str):
+    """写入 room_id 到文件并同步更新内存缓存"""
+    global _cached_room_id
+    _cached_room_id = room_id
+    with open(CACHE_PATH / "room_id", "w") as f:
+        f.write(room_id)
+
+
+def invalidate_room_id_cache():
+    """清除 room_id 内存缓存"""
+    global _cached_room_id
+    _cached_room_id = None
 
 
 async def generate_qr_code() -> Dict[str, Any]:
@@ -51,8 +78,7 @@ async def poll_qr_status(qrcode_key: str) -> Dict[str, Any]:
         }
 
         # 保存 room_id 到本地存储
-        with open(CACHE_PATH / "room_id", "w") as f:
-            f.write(room_id)
+        _persist_room_id(room_id)
         # 保存一次 session 到本地存储
         save_cookies(bili_client)
     return result
@@ -87,7 +113,7 @@ async def get_area_list() -> List[Dict[str, Any]]:
 
 async def get_room_info() -> Dict[str, Any]:
     """获取直播间详细信息"""
-    room_id = (CACHE_PATH / "room_id").read_text().strip()
+    room_id = get_cached_room_id()
     resp = await bili_client.get(
         "https://api.live.bilibili.com/room/v1/Room/get_info",
         params={"room_id": room_id},
@@ -108,7 +134,7 @@ async def get_room_info() -> Dict[str, Any]:
 async def update_room_info(updates: Dict[str, Any]):
     """更新直播间信息 (标题, 标签, 分区)"""
     cookies = bili_client.cookies
-    room_id = (CACHE_PATH / "room_id").read_text().strip()
+    room_id = get_cached_room_id()
     csrf = cookies.get("bili_jct")
     if not csrf:
         raise ValueError("Cookies 中缺少 'bili_jct'，无法执行操作")
@@ -146,15 +172,10 @@ async def update_room_info(updates: Dict[str, Any]):
 async def start_live(area) -> Dict[str, Any]:
     """开始直播"""
     cookies = bili_client.cookies
-    room_id = (CACHE_PATH / "room_id").read_text().strip()
+    room_id = get_cached_room_id()
     csrf = cookies.get("bili_jct")
     if not csrf:
         raise ValueError("Cookies 中缺少 'bili_jct'")
-
-    current_info = await get_room_info()
-    area_id = current_info.get("area", {}).get("id")
-    if not area_id:
-        raise Exception("无法获取当前分区ID，无法开播")
 
     pc_link_version, pc_link_build = await get_pc_link_build()
 
@@ -187,7 +208,7 @@ async def start_live(area) -> Dict[str, Any]:
 
 async def stop_live():
     """停止直播"""
-    room_id = (CACHE_PATH / "room_id").read_text().strip()
+    room_id = get_cached_room_id()
     cookies = bili_client.cookies
     csrf = cookies.get("bili_jct")
     if not csrf:
@@ -229,10 +250,7 @@ async def get_cookies():
 
 async def get_room_id():
     """获取当前登录的房间 ID"""
-    room_id_path = CACHE_PATH / "room_id"
-    if not room_id_path.exists():
-        return ""
-    return room_id_path.read_text().strip()
+    return get_cached_room_id()
 
 
 async def get_pc_link_build() -> Tuple[str, str]:
@@ -269,19 +287,10 @@ async def logout() -> bool:
         data={"biliCSRF": CSRF, "gourl": "https://www.bilibili.com/"}
     )
     if not await check_login_status():
-        # 删除本地存储的 Cookies 和房间 ID 信息
-        CACHE_PATH_ROOM_ID = CACHE_PATH / "room_id"
-        if CACHE_PATH_ROOM_ID.exists():
-            CACHE_PATH_ROOM_ID.unlink()
-        SESSION_PATH = CACHE_PATH / "session"
-        if SESSION_PATH.exists():
-            SESSION_PATH.unlink()
-        # 清空对应文件
-        with open(SESSION_PATH, "w") as f:
-            f.write("")
-        with open(CACHE_PATH_ROOM_ID, "w") as f:
-            f.write("")
-        # 删除 session 中的 cookies
+        invalidate_room_id_cache()
+        session_path = CACHE_PATH / "session"
+        if session_path.exists():
+            session_path.unlink()
         bili_client.cookies.clear()
         return True
     return False
