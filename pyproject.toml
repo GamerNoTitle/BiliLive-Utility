@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bililive-utility"
-version = "2.4.0"
+version = "2.5.0"
 authors = [
   { name="GamerNoTitle", email="GamerNoTitle@outlook.com" },
 ]
@@ -25,6 +25,7 @@ dependencies = [
     "qrcode>=7.4.2",
     "pillow>=10.4.0",
     "pywebview>=5.4",
+    "pycryptodome>=3.23.0",
 ]
 
 [project.scripts]
