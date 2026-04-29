@@ -38,18 +38,21 @@ class BiliLiveUtility {
 
         container.appendChild(toast)
 
-        // 关闭按钮事件
         const closeBtn = toast.querySelector(".toast-close")
         closeBtn.addEventListener("click", () => this.removeToast(toast))
 
-        // 自动关闭
-        setTimeout(() => {
+        const timer = setTimeout(() => {
             this.removeToast(toast)
         }, duration)
+        toast._timer = timer
     }
 
     removeToast(toast) {
         if (toast && toast.parentNode) {
+            if (toast._timer) {
+                clearTimeout(toast._timer)
+                toast._timer = null
+            }
             toast.classList.add("removing")
             setTimeout(() => {
                 if (toast.parentNode) {
@@ -367,8 +370,12 @@ class BiliLiveUtility {
         document.getElementById("parentArea").value = data.data.area.parent_id
         this.onParentAreaChange()
 
-        setTimeout(() => {
+        if (this._populateTimeout) {
+            clearTimeout(this._populateTimeout)
+        }
+        this._populateTimeout = setTimeout(() => {
             document.getElementById("childArea").value = data.data.area.id
+            this._populateTimeout = null
         }, 100)
 
         this.prevTitle = data.title
@@ -545,6 +552,9 @@ class BiliLiveUtility {
                         qrContainer.setAttribute("src", `data:image/png;base64,${qrImage}`);
                         faceRecognitionModal.classList.remove("hidden");
                         this.showStatus("请使用B站手机客户端扫码进行人脸验证", "warning");
+                    } else if (data.data.message) {
+                        this.showStatus(data.data.message, "error")
+                        this.showToast(data.data.message, "error")
                     } else {
                         this.handleLiveStart(data)
                     }
@@ -679,17 +689,32 @@ class BiliLiveUtility {
     logout() {
         fetch("/api/auth/logout").then((data) => {
             if (data.ok) {
-                // 返回登录页面
                 this.showToast("已退出登录", "success")
                 this.showLoginPage()
             } else {
                 this.showToast("退出登录失败", "error")
             }
         })
-    };
+    }
+
+    cleanup() {
+        if (this.qrTimer) {
+            clearInterval(this.qrTimer)
+            this.qrTimer = null
+        }
+        if (this.countdownTimer) {
+            clearInterval(this.countdownTimer)
+            this.countdownTimer = null
+        }
+        if (this._populateTimeout) {
+            clearTimeout(this._populateTimeout)
+            this._populateTimeout = null
+        }
+    }
 }
 
 // 初始化应用
 document.addEventListener("DOMContentLoaded", () => {
-    new BiliLiveUtility()
+    const app = new BiliLiveUtility()
+    window.addEventListener("beforeunload", () => app.cleanup())
 })

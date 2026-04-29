@@ -177,16 +177,14 @@ async def start_live(area) -> Dict[str, Any]:
     if not csrf:
         raise ValueError("Cookies 中缺少 'bili_jct'")
 
-    pc_link_version, pc_link_build = await get_pc_link_build()
+    pc_link_build = "1001017006"    # Mac v1.9.0 版本的构建号，暂时没找到合适的接口来获取构建号，所以先写死
 
     data = {
         "room_id": room_id,
-        "platform": "pc_link",
+        "platform": "web_electron_link",
         "area_v2": area,
-        "csrf_token": csrf,
         "csrf": csrf,
         "ts": int(time.time()),
-        "version": pc_link_version,
         "build": pc_link_build,
         "appkey": APPKEY,
     }
@@ -201,8 +199,12 @@ async def start_live(area) -> Dict[str, Any]:
     print(start_resp)
     if start_resp.get("code") == 0:
         return start_resp.get("data", {})
-    elif start_resp.get("code") == 60024:   # 快手事件之后需要人脸验证
-        return {"qr": start_resp.get("data", {}).get("qr", "")}
+    elif start_resp.get("code") in (60024, 60043):
+        qr = start_resp.get("data", {}).get("qr", "")
+        if not qr:
+            mid = cookies.get("DedeUserID", "")
+            qr = f"https://www.bilibili.com/blackboard/live/face-auth-middle.html?source_event=400&mid={mid}"
+        return {"qr": qr, "message": start_resp.get("message", "")}
     raise Exception(f"{start_resp.get('message', '未知错误')}")
 
 
@@ -214,7 +216,7 @@ async def stop_live():
     if not csrf:
         raise ValueError("Cookies 中缺少 'bili_jct'")
 
-    data = {"room_id": room_id, "platform": "pc_link", "csrf_token": csrf, "csrf": csrf}
+    data = {"room_id": room_id, "platform": "web_electron_link", "csrf_token": csrf, "csrf": csrf, "visit_id": ""}
 
     resp = await bili_client.post(
         "https://api.live.bilibili.com/room/v1/Room/stopLive",

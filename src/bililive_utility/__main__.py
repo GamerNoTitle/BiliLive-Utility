@@ -13,14 +13,12 @@ from .api import auth, room, live, app_info
 from .utils.version import VERSION
 from .context.path import get_resource_path
 
-# --- 应用初始化 ---
 app = FastAPI(
     title="BiliLive Utility",
     version=VERSION.version,
 )
 
 
-# --- 异常处理器 ---
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc):
     return JSONResponse(
@@ -29,7 +27,6 @@ async def http_exception_handler(request, exc):
     )
 
 
-# --- 中间件 ---
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -38,18 +35,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- 包含 API 路由 ---
 app.include_router(auth.router)
 app.include_router(room.router)
 app.include_router(live.router)
 app.include_router(app_info.router)
 
-# --- 静态文件服务 ---
 static_path = os.path.join(get_resource_path(), "static")
 print(f"Static files path: {static_path}")
 app.mount("/", StaticFiles(directory=static_path, html=True), name="static")
 
-# --- 启动函数 ---
 def main(debug: bool = False):
     """
     包含了所有的设置和启动逻辑的启动入口函数
