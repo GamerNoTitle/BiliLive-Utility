@@ -1,4 +1,5 @@
 import os
+import sys
 from fastapi import APIRouter, Header
 from typing import Optional
 from ..bilibili import api as bilibili_api
@@ -52,9 +53,9 @@ async def disagree_disclaimer_handler():
     """
     用户不同意免责声明时，直接退出程序
     """
-    os._exit(0)
+    sys.exit(0)
 
 
 @router.get("/exit", summary="退出应用")
 async def exit_application():
-    os._exit(0)
+    sys.exit(0)
