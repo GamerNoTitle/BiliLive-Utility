@@ -86,6 +86,15 @@ class BiliLiveUtility {
         // 关于页面
         document.getElementById("aboutBtn").addEventListener("click", () => this.showAbout())
         document.querySelector(".modal-close").addEventListener("click", () => this.hideAbout())
+        document.getElementById("checkUpdateBtn").addEventListener("click", () => this.checkUpdate(false, true))
+        document.getElementById("checkPreReleaseBtn").addEventListener("click", () => this.checkUpdate(true, true))
+
+        // 更新弹窗
+        document.getElementById("updateGoBtn").addEventListener("click", async () => {
+            await fetch("/api/application/update")
+            document.getElementById("updateModal").classList.add("hidden")
+        })
+        document.getElementById("updateIgnoreBtn").addEventListener("click", () => this.ignoreUpdate())
 
         // 人脸验证
         document.querySelector(".fr-modal-close").addEventListener("click", () => {
@@ -161,6 +170,8 @@ class BiliLiveUtility {
             const cookies = credentials.cookies || ""
             document.getElementById("roomId").value = roomId
             document.getElementById("cookies").value = cookies
+            // 检查更新
+            this.checkUpdate()
         } else {
             // 未登录，显示登录页面
             this.showLoginPage()
@@ -695,6 +706,48 @@ class BiliLiveUtility {
                 this.showToast("退出登录失败", "error")
             }
         })
+    }
+
+    async checkUpdate(prerelease = false, showNoUpdate = false) {
+        try {
+            const resp = await fetch(`/api/application/releases${prerelease ? "?prerelease=true" : ""}`)
+            const result = await resp.json()
+            if (!result.success) return
+
+            const { has_update, current_version, version, url, body, published_at } = result.data
+            if (!has_update) {
+                if (showNoUpdate) this.showToast("当前已是最新版本", "success")
+                return
+            }
+
+            const ignoredKey = prerelease ? "ignoredPreReleaseVersion" : "ignoredUpdateVersion"
+            const ignored = localStorage.getItem(ignoredKey)
+            if (ignored === version && !showNoUpdate) return
+
+            this._updateUrl = url
+            this._isPreRelease = prerelease
+            document.getElementById("currentVersion").textContent = current_version || "未知"
+            document.getElementById("updateVersion").textContent = version
+            document.getElementById("updatePublishedAt").textContent = published_at ? new Date(published_at).toLocaleString() : "未知"
+            const updateBodyEl = document.getElementById("updateBody")
+            if (typeof marked !== "undefined") {
+                updateBodyEl.innerHTML = marked.parse(body || "暂无更新说明")
+            } else {
+                updateBodyEl.textContent = body || "暂无更新说明"
+            }
+            document.getElementById("updateModal").classList.remove("hidden")
+        } catch (e) {
+            console.error("检查更新失败:", e)
+            if (showNoUpdate) this.showToast("检查更新失败", "error")
+        }
+    }
+
+    ignoreUpdate() {
+        const version = document.getElementById("updateVersion").textContent
+        const ignoredKey = this._isPreRelease ? "ignoredPreReleaseVersion" : "ignoredUpdateVersion"
+        localStorage.setItem(ignoredKey, version)
+        document.getElementById("updateModal").classList.add("hidden")
+        this.showToast("已忽略此版本更新", "info")
     }
 
     cleanup() {
