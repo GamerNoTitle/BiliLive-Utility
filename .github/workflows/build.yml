@@ -98,6 +98,7 @@ jobs:
     - name: Build Application
       env:
         AG_VERSION: ${{ needs.before-build.outputs.version }}
+        AG_BUILD_TIME: ${{ needs.before-build.outputs.build_time }}
       run: ${{ matrix.build_cmd }}
 
     - name: Upload Build Artifact
