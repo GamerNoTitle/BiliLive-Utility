@@ -4,65 +4,61 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="BiliLive-Utility，开源的 B 站直播间管理工具。扫码登录、管理直播间、获取推流凭据，让开播准备更简单。">
-  <meta name="theme-color" content="#fafaf7">
-  <title>BiliLive-Utility · 让开播，简单一点</title>
-  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#fb7299">
+  <title>BiliLive-Utility · B站直播间管理工具</title>
+  <link rel="icon" href="./static/favicon.ico">
   <link rel="stylesheet" href="./assets/site.css">
   <script src="./assets/site.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">跳转到主要内容</a>
-  <header class="header"><div class="wrap nav">
-    <a class="brand" href="#" aria-label="BiliLive-Utility 首页"><span class="brand-icon" aria-hidden="true">b<span>↗</span></span><span>BiliLive<span class="brand-light">-Utility</span></span></a>
-    <nav aria-label="主导航"><a href="#features">功能</a><a href="#guide">快速上手</a><a href="#faq">常见问题</a></nav>
-    <a class="github-link" href="https://github.com/GamerNoTitle/BiliLive-Utility">GitHub <span aria-hidden="true">↗</span></a>
-  </div></header>
+  <header class="app-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="#" aria-label="BiliLive-Utility 首页"><img src="./static/icon.png" width="42" height="42" alt=""><span>BiliLive-Utility</span></a>
+      <nav aria-label="主导航"><a href="#features">功能介绍</a><a href="#preview">软件界面</a><a href="#guide">快速上手</a></nav>
+      <a class="btn btn-outline" href="https://github.com/GamerNoTitle/BiliLive-Utility">GitHub ↗</a>
+    </div>
+  </header>
   <main id="main">
     <section class="hero wrap">
       <div class="hero-copy">
-        <div class="eyebrow"><span class="status-dot"></span> 为你的下一场直播，做好准备</div>
-        <h1>让开播，<br><span>简单一点。</span></h1>
-        <p class="hero-description">从扫码登录到获取推流凭据，<br>把繁琐的开播准备，收进一个轻巧的工具。</p>
-        <div class="actions"><a class="button primary" href="#download">下载 BiliLive-Utility <span aria-hidden="true">↓</span></a><a class="text-link" href="#guide">如何开始 <span aria-hidden="true">↗</span></a></div>
-        <div class="hero-meta"><span>Windows / macOS</span><span>开源 · AGPL-3.0</span></div>
+        <span class="pill">开源 · 桌面工具 · 为 B 站直播而生</span>
+        <h1>你的直播间，<br>一个工具就搞定。</h1>
+        <p>扫码登录、管理直播间、获取推流凭据。<br>熟悉的粉色界面，让每次开播准备更简单。</p>
+        <div class="actions"><a class="btn btn-white" href="#download">↓ 下载 BiliLive-Utility</a><a class="btn btn-glass" href="#guide">查看使用指南 ↗</a></div>
+        <div class="platforms">Windows x86_64 <span> / </span> macOS Intel & Apple Silicon</div>
       </div>
-      <div class="hero-visual">
-        <div class="orbit-label"><span aria-hidden="true">✳</span> LESS SETUP. MORE LIVE.</div>
-        <div class="app-preview" aria-label="直播间管理界面示意，所有数据均为虚构">
-          <div class="window-bar"><div class="window-dots"><i></i><i></i><i></i></div><span>BiliLive-Utility</span><span class="window-mark">↗</span></div>
-          <div class="preview-body"><div class="preview-heading"><div><span class="mini-label">YOUR LIVE SPACE</span><h2>我的直播间</h2></div><span class="preview-status"><span></span> 准备就绪</span></div>
-          <div class="preview-field"><span>直播间标题</span><div>今天也来分享一点快乐 <span>↗</span></div></div>
-          <div class="preview-row"><div><span>父分区</span><strong>生活 <span>⌄</span></strong></div><div><span>子分区</span><strong>日常 <span>⌄</span></strong></div></div>
-          <div class="stream-card"><div class="stream-title"><span>◉ &nbsp; 推流信息</span><span class="tiny-tag">仅作界面示意</span></div><div class="stream-item"><span>推流地址</span><code>rtmp://••••••••/live/</code></div><div class="stream-item"><span>推流密钥</span><code>••••••••••••••••</code><span aria-hidden="true">▣</span></div></div>
-          <div class="preview-bottom"><span><span class="status-dot"></span> 一切就绪，只等你开场</span><span class="fake-button">开始直播 &nbsp; ↗</span></div>
-          </div>
-        </div>
-        <div class="floating-note"><span class="note-icon" aria-hidden="true">✓</span><div><strong>少一点折腾，多一点表达</strong><span>你的直播，保持你的节奏。</span></div></div>
-      </div>
+      <div class="hero-identity"><img src="./static/icon.png" alt="BiliLive-Utility 项目图标：举着 LIVE 牌子的电视与扳手" width="1024" height="1024" fetchpriority="high"><div class="identity-caption"><span class="live-dot"></span> BiliLive-Utility <span>你的开播小助手</span></div></div>
     </section>
-    <div class="wrap trust-strip"><span>一个工具，串起开播前的每一步</span><div><span>扫码登录</span><i> / </i><span>直播间管理</span><i> / </i><span>推流凭据</span></div><span class="strip-symbol" aria-hidden="true">✳</span></div>
-    <section class="section wrap" id="features">
-      <div class="section-heading"><div><span class="eyebrow">01 / 为开播而生</span><h2>该有的功能，<br>刚刚好。</h2></div><p>不必在多个页面间来回切换。<br>把准备工作留给工具，把注意力留给内容。</p></div>
+    <section class="wrap features-section" id="features">
+      <div class="section-heading"><span class="pill">功能介绍</span><h2>开播前的准备，都在这里。</h2><p>从账号登录到推流设置，把常用操作集中到一个桌面窗口。</p></div>
       <div class="feature-grid">
-        <article class="feature"><span class="feature-icon" aria-hidden="true">▦</span><span class="feature-number">01</span><h3>扫一扫，就登录</h3><p>使用 B 站手机客户端扫码，在桌面程序中完成登录，无需手动填写 Cookie。</p><span class="feature-tag">从登录开始，少一步繁琐</span></article>
-        <article class="feature"><span class="feature-icon" aria-hidden="true">☷</span><span class="feature-number">02</span><h3>直播间，随手管理</h3><p>获取直播间信息，修改标题、标签和分区。下一场的主题，由你来定。</p><span class="feature-tag">开播前，再调整一下</span></article>
-        <article class="feature"><span class="feature-icon" aria-hidden="true">↗</span><span class="feature-number">03</span><h3>推流信息，一处搞定</h3><p>开启或停止直播，复制推流地址与密钥，也可以将推流凭据保存到本地。</p><span class="feature-tag">对接 OBS 等推流软件</span></article>
+        <article class="card feature"><div class="card-header"><span class="icon" aria-hidden="true">▦</span><h3>扫码登录</h3></div><div class="card-body"><p>使用 B 站手机客户端扫码，在程序中完成登录，无需手动填写 Cookie。</p><span class="tag">登录后自动获取账号信息</span></div></article>
+        <article class="card feature"><div class="card-header"><span class="icon" aria-hidden="true">⚙</span><h3>直播间管理</h3></div><div class="card-body"><p>获取直播间数据，修改标题、标签与分区，为下一场直播准备好内容。</p><span class="tag">标题 · 标签 · 父分区 / 子分区</span></div></article>
+        <article class="card feature"><div class="card-header"><span class="icon" aria-hidden="true">◉</span><h3>推流信息</h3></div><div class="card-body"><p>开启或停止直播，复制推流地址和密钥，也可以将凭据保存到本地。</p><span class="tag">配合 OBS 等推流软件使用</span></div></article>
       </div>
     </section>
-    <section class="guide-section" id="guide"><div class="wrap guide-layout"><div class="guide-intro"><span class="eyebrow">02 / 从这里开始</span><h2>三步，<br>准备好你的开场。</h2><p>下载桌面程序后操作即可。<br>这个网页不需要、也不会要求你登录 B 站。</p><a class="text-link" href="https://github.com/GamerNoTitle/BiliLive-Utility#开箱即用">阅读完整使用说明 <span aria-hidden="true">↗</span></a></div><ol class="steps">
-      <li><span class="step-number">01</span><div><h3>下载并打开程序</h3><p>前往 GitHub Releases，选择适合你系统与芯片架构的版本，下载解压或安装后打开。</p></div></li>
-      <li><span class="step-number">02</span><div><h3>扫码登录，设置直播间</h3><p>阅读并同意免责声明，使用 B 站 App 扫码登录。获取直播间数据，按需调整标题、标签和分区。</p></div></li>
-      <li><span class="step-number">03</span><div><h3>点击开播，连接推流软件</h3><p>开播成功后，将推流地址和密钥填入 OBS 等软件，再从推流软件开始推流。结束后记得停播。</p></div></li>
-    </ol></div></section>
-    <section class="section wrap" id="download"><div class="download-panel"><div><span class="eyebrow">READY WHEN YOU ARE</span><h2>下一场直播，<br>从这里出发。</h2><p>免费获取程序，或者从源码开始探索。</p></div><div class="download-actions"><a class="button dark" href="https://github.com/GamerNoTitle/BiliLive-Utility/releases/latest">前往 GitHub 下载 <span aria-hidden="true">↗</span></a><span>Windows x86_64 · macOS Intel / Apple Silicon</span><a class="source-link" href="https://github.com/GamerNoTitle/BiliLive-Utility#源码启动">使用 Python 3.12 + uv 从源码运行 ↗</a></div></div></section>
-    <section class="faq-section wrap" id="faq"><div><span class="eyebrow">03 / 你可能想知道</span><h2>还有一点小问题？</h2><p>更多问题，欢迎在 <a href="https://github.com/GamerNoTitle/BiliLive-Utility/issues">GitHub Issues ↗</a> 交流。</p></div><div class="faq-list">
-      <details open><summary>可以直接在这个网页开播吗？<span aria-hidden="true">+</span></summary><p>不可以。这是项目介绍与下载页面，不是在线控制台。扫码登录、直播间管理和获取推流凭据需要在下载的桌面程序中完成。</p></details>
-      <details><summary>下载时应该选择哪个版本？<span aria-hidden="true">+</span></summary><p>Windows 选择 Windows-amd64；搭载 Intel 芯片的 Mac 选择 macOS-amd64，Apple Silicon（M 系列）选择 macOS-arm64。请以 Releases 中实际提供的文件为准；其他环境可参考源码启动说明。</p></details>
-      <details><summary>拿到推流凭据就已经开始直播了吗？<span aria-hidden="true">+</span></summary><p>程序负责开启直播间并获取凭据，画面与声音还需要使用 OBS 等推流软件传输。请将地址与密钥分别填入推流软件的自定义服务器设置，并在软件中开始推流。</p></details>
-      <details><summary>使用时有哪些需要注意的地方？<span aria-hidden="true">+</span></summary><p>请只从本项目 GitHub 下载程序，不要分享 Cookie、登录二维码或推流密钥。项目仅供个人学习、研究和非商业用途；使用前请确认符合平台规则及法律法规，并确保直播内容已获得合法授权。平台接口与规则可能变化，本工具不保证所有账号都能开播。</p></details>
-    </div></section>
-    <aside class="notice wrap"><span aria-hidden="true">ⓘ</span><p>独立开源项目，非哔哩哔哩官方产品。使用风险由使用者自行承担，请遵守平台规则与相关法律法规。<a href="https://github.com/GamerNoTitle/BiliLive-Utility#readme">了解项目与免责声明 ↗</a></p></aside>
+    <section class="wrap preview-section" id="preview">
+      <div class="section-heading"><span class="pill">软件界面</span><h2>这就是你打开程序时的模样。</h2><p>粉紫渐变背景、白色信息卡片、熟悉的操作按钮。官网与软件，同一种风格。</p></div>
+      <figure class="product-shot"><a href="./assets/app-preview.png" aria-label="打开完整的软件界面预览图"><img src="./assets/app-preview.png" width="1180" height="1604" loading="lazy" alt="基于原程序 WebView 渲染的界面预览：基本信息、直播间管理及推流信息三张白色卡片，粉紫渐变背景。账号与凭据均为虚构演示数据。"></a><figcaption>基于原程序 HTML / CSS 渲染 · 使用虚构演示数据 · 字体图标以本地符号替代 · 点击查看完整大图</figcaption></figure>
+      <div class="info-banner"><span aria-hidden="true">ⓘ</span><p>这里是项目介绍与下载页，不是在线控制台。扫码登录和开播操作，请在下载的桌面程序中完成。</p></div>
+    </section>
+    <section class="wrap guide-section" id="guide">
+      <div class="card guide-card"><div class="card-header"><h2>快速上手</h2><a class="inline-link" href="https://github.com/GamerNoTitle/BiliLive-Utility#开箱即用">完整使用说明 ↗</a></div><ol class="steps card-body">
+        <li><span class="step-number">1</span><div><h3>下载并打开程序</h3><p>前往 GitHub Releases，按操作系统与芯片架构选择版本。下载解压或安装后打开。</p></div></li>
+        <li><span class="step-number">2</span><div><h3>扫码登录，设置直播间</h3><p>阅读并同意免责声明，使用 B 站 App 扫码。获取直播间数据，再按需修改标题、标签和分区。</p></div></li>
+        <li><span class="step-number">3</span><div><h3>开启直播，连接推流软件</h3><p>开播成功后，把推流地址与密钥填入 OBS 等软件，并从推流软件开始推流。结束后记得停播。</p></div></li>
+      </ol></div>
+    </section>
+    <section class="wrap download-section" id="download"><div class="card download-card"><div class="download-intro"><img src="./static/icon.png" alt="" width="76" height="76" loading="lazy"><div><h2>准备好，开启下一场直播。</h2><p>选择适合你的版本，免费获取 BiliLive-Utility。</p></div></div><div class="download-actions"><a class="btn btn-primary" href="https://github.com/GamerNoTitle/BiliLive-Utility/releases/latest">↓ 前往 GitHub 下载最新版</a><span>Windows x86_64 · macOS Intel / Apple Silicon</span><a class="inline-link" href="https://github.com/GamerNoTitle/BiliLive-Utility#源码启动">使用 Python 3.12 + uv 从源码运行 ↗</a></div></div></section>
+    <section class="wrap faq-section" id="faq"><div class="card"><div class="card-header"><h2>常见问题</h2><a class="inline-link" href="https://github.com/GamerNoTitle/BiliLive-Utility/issues">反馈问题 ↗</a></div><div class="faq-list card-body">
+      <details open><summary>可以直接在网页上使用吗？<span aria-hidden="true">+</span></summary><p>不可以。程序通过 WebView 显示操作界面，但需要配合本地程序运行；这个静态官网只提供项目介绍、下载和使用指南，不会要求你输入 B 站账号或 Cookie。</p></details>
+      <details><summary>下载时应该选择哪个版本？<span aria-hidden="true">+</span></summary><p>Windows 选择 Windows-amd64；Intel Mac 选择 macOS-amd64；Apple Silicon（M 系列）选择 macOS-arm64。请以 Releases 实际提供的文件为准，其他环境可参考源码启动说明。</p></details>
+      <details><summary>点击开播后，为什么还需要 OBS？<span aria-hidden="true">+</span></summary><p>程序负责开启直播间和获取推流凭据，画面与声音仍需 OBS 等推流软件传输。将推流地址与密钥分别填入推流软件的自定义服务器设置，再开始推流即可。</p></details>
+      <details><summary>使用时需要注意什么？<span aria-hidden="true">+</span></summary><p>请只从本项目 GitHub 下载程序，不要分享 Cookie、登录二维码或推流密钥。平台接口与规则可能变化，本工具不保证所有账号均可开播。使用前请确认符合平台规则，并确保直播内容已获得合法授权。</p></details>
+    </div></div></section>
+    <aside class="wrap disclaimer"><h2>免责声明</h2><p>本项目仅供个人学习、研究和非商业性用途。使用时需自行确保遵守相关法律法规，特别是与版权相关的法律条款，并仅在有合法授权的情况下使用相关内容。开发者不对因使用本工具而产生的版权纠纷或法律责任承担责任。</p><p>本项目非哔哩哔哩官方产品，使用风险由使用者自行承担。<a href="https://github.com/GamerNoTitle/BiliLive-Utility#readme">阅读项目说明 ↗</a></p></aside>
   </main>
-  <footer class="footer wrap"><div><a class="brand footer-brand" href="#">BiliLive<span class="brand-light">-Utility</span><span class="footer-dot">.</span></a><p>为每一次想要分享的瞬间。</p></div><div class="footer-links"><a href="https://github.com/GamerNoTitle/BiliLive-Utility">源代码 ↗</a><a href="https://t.me/DohnaNyan">Telegram ↗</a><a href="https://bili33.top/sponsors">支持开发者 ↗</a><a href="https://github.com/GamerNoTitle/BiliLive-Utility/blob/master/LICENSE">AGPL-3.0 ↗</a></div><div class="footer-bottom"><span>© <span id="year">2026</span> GamerNoTitle · Built for the live moments.</span><a href="#">回到顶部 ↑</a></div></footer>
+  <footer class="app-footer"><div class="wrap"><div class="footer-top"><a class="brand" href="#"><img src="./static/icon.png" width="34" height="34" alt=""><span>BiliLive-Utility</span></a><div class="footer-links"><a href="https://github.com/GamerNoTitle/BiliLive-Utility">GitHub ↗</a><a href="https://t.me/DohnaNyan">Telegram ↗</a><a href="https://bili33.top/sponsors">支持开发者 ↗</a></div></div><div class="footer-bottom"><span>© <span id="year">2026</span> GamerNoTitle · <a href="https://github.com/GamerNoTitle/BiliLive-Utility/blob/master/LICENSE">AGPL-3.0</a></span><a href="#">回到顶部 ↑</a></div></div></footer>
 </body>
 </html>
