@@ -2,10 +2,11 @@ import os
 import re
 import webbrowser
 import httpx
-from fastapi import APIRouter, Header, Query
+from fastapi import APIRouter, Header, Query, HTTPException
 from typing import Optional
 from ..bilibili import api as bilibili_api
-from ..context.path import CACHE_PATH
+from ..bilibili.session import bili_client
+from ..context.path import CACHE_PATH, LEGACY_CACHE_PATH
 from ..utils.version import VERSION
 
 GITHUB_REPO = "GamerNoTitle/BiliLive-Utility"
@@ -34,10 +35,18 @@ def _has_update(current: str, remote: str) -> bool:
     return rem > cur
 
 
+def _disclaimer_accepted() -> bool:
+    """免责声明是否已被同意：优先新路径，兼容旧版本的 v2 目录（只读，不迁移、不删除）"""
+    for path in (CACHE_PATH / "access", LEGACY_CACHE_PATH / "access"):
+        if path.exists():
+            return True
+    return False
+
+
 @router.get("/info", summary="获取应用及账户状态")
 async def get_application_info():
     app_info = {
-        "first_access": os.path.exists(CACHE_PATH / "access"),
+        "first_access": _disclaimer_accepted(),
         "version": VERSION.version,
         "build": VERSION.build,
     }
@@ -64,11 +73,50 @@ async def get_application_info():
 
 @router.get("/first_access", summary="更改首次访问状态")
 async def set_first_access():
-    app_info = {"first_access": os.path.exists(CACHE_PATH / "access")}
+    app_info = {"first_access": _disclaimer_accepted()}
     if not app_info["first_access"]:
+        # 缓存目录按需创建，不在程序启动时预先建目录
+        (CACHE_PATH / "access").parent.mkdir(parents=True, exist_ok=True)
         with open(CACHE_PATH / "access", "w") as f:
             pass
         return {"success": True, "data": {"first_access": True}}
+
+
+# 清除缓存时需要一并删除的本机凭据与状态文件
+CACHE_FILE_NAMES = ("session", "room_id")
+# 新路径优先；旧版本写入的 v2 目录也必须一起清理，否则清理后程序仍会从旧路径读回凭据
+CACHE_LOCATIONS = (CACHE_PATH, LEGACY_CACHE_PATH)
+
+
+@router.post("/clear_cache", summary="清除本地缓存")
+async def clear_cache():
+    """清除本地保存的会话缓存和直播间号缓存
+
+    这是一次由用户在界面上显式确认的操作，只删除程序自己写入的凭据与状态文件；
+    不会删除任何目录，也不会碰缓存目录里的其他内容。
+    """
+    cleared = []
+    for location in CACHE_LOCATIONS:
+        for name in CACHE_FILE_NAMES:
+            path = location / name
+            try:
+                if path.exists():
+                    path.unlink()
+                    cleared.append(str(path))
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"清除 {path} 失败: {e}")
+
+    # 同步清空进程内的凭据与内存缓存，避免清理后仍带着旧状态继续请求
+    bili_client.cookies.clear()
+    bilibili_api.invalidate_room_id_cache()
+
+    return {
+        "success": True,
+        "data": {
+            "cleared": cleared,
+            "message": "缓存已清除，请重启应用后重新扫码登录",
+        },
+    }
 
 
 @router.get("/disagree", summary="用户不同意免责声明")

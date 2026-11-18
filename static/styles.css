@@ -31,6 +31,13 @@ body {
     text-decoration: none;
 }
 
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
 .btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -263,6 +270,60 @@ body {
 .countdown span {
     font-weight: 600;
     color: #fb7299;
+}
+
+/* 登录页面右上角的清除缓存按钮 */
+#loginPage {
+    position: relative;
+}
+
+.login-cache-btn {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.92);
+    color: #fb7299;
+    font-size: 13px;
+    padding: 8px 16px;
+}
+
+.login-cache-btn:hover {
+    background: #fb7299;
+    color: white;
+}
+
+/* 二维码下方的扫码提示 */
+.qr-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: #fff8e6;
+    border: 1px solid #ffe1a8;
+    text-align: left;
+}
+
+.qr-alert i {
+    color: #f0a020;
+    font-size: 14px;
+    margin-top: 3px;
+}
+
+.qr-alert p {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #8a5b00;
+}
+
+.qr-alert code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px;
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: rgba(240, 160, 32, 0.18);
 }
 
 /* 主页面 */
@@ -525,6 +586,12 @@ body {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
+    .login-cache-btn {
+        top: 14px;
+        right: 14px;
+        padding: 6px 12px;
+    }
+
     .main-content {
         padding: 20px;
     }

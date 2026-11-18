@@ -70,6 +70,17 @@ class BiliLiveUtility {
         // 登录相关
         document.getElementById("refreshQr").addEventListener("click", () => this.generateQRCode())
 
+        // 清除缓存
+        document.getElementById("clearCacheBtn").addEventListener("click", () => this.openClearCacheModal())
+        document.getElementById("clearCacheModalClose").addEventListener("click", () => this.closeClearCacheModal())
+        document.getElementById("clearCacheCancelBtn").addEventListener("click", () => this.closeClearCacheModal())
+        document.getElementById("clearCacheConfirmBtn").addEventListener("click", () => this.confirmClearCache())
+        document.getElementById("clearCacheModal").addEventListener("click", (e) => {
+            if (e.target === document.getElementById("clearCacheModal")) {
+                this.closeClearCacheModal()
+            }
+        })
+
         // 主页面功能
         document.getElementById("getRoomData").addEventListener("click", () => this.getRoomData())
         document.getElementById("updateTitle").addEventListener("click", () => this.updateRoomTitle())
@@ -156,6 +167,42 @@ class BiliLiveUtility {
         this.showToast("用户拒绝免责声明，程序即将退出", "error")
     }
 
+    openClearCacheModal() {
+        document.getElementById("clearCacheModal").classList.remove("hidden")
+    }
+
+    closeClearCacheModal() {
+        document.getElementById("clearCacheModal").classList.add("hidden")
+    }
+
+    async confirmClearCache() {
+        const confirmBtn = document.getElementById("clearCacheConfirmBtn")
+        const statusElement = document.getElementById("qrStatus")
+        confirmBtn.disabled = true
+
+        try {
+            const response = await fetch("/api/application/clear_cache", { method: "POST" })
+            const result = await response.json()
+
+            if (!response.ok || !result.success) {
+                throw new Error((result.data && result.data.error) || "清除缓存失败")
+            }
+
+            this.closeClearCacheModal()
+            // 缓存已清空，停止当前的二维码轮询与倒计时，避免清理后状态继续乱跳
+            this.cleanup()
+            document.getElementById("qrCode").innerHTML =
+                '<i class="fas fa-check-circle"></i><p>缓存已清除，请重启应用</p>'
+            document.getElementById("countdown").parentElement.classList.add("hidden")
+            statusElement.textContent = "缓存已清除，请重启应用后重新扫码登录"
+        } catch (error) {
+            console.error("清除缓存失败:", error)
+            statusElement.textContent = "清除缓存失败，请稍后重试"
+        } finally {
+            confirmBtn.disabled = false
+        }
+    }
+
     async checkLoginStatus() {
         // 检查登录状态
         const isLoggedIn = await (await fetch("/api/auth/check_login")).json().then(data => data.success)
@@ -234,6 +281,7 @@ class BiliLiveUtility {
 
         this.countdownSeconds = 180
         document.getElementById("countdown").textContent = this.countdownSeconds // 立即更新一次UI
+        document.getElementById("countdown").parentElement.classList.remove("hidden")
 
         this.countdownTimer = setInterval(() => {
             this.countdownSeconds--

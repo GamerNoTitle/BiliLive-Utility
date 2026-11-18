@@ -67,6 +67,9 @@
 
     <!-- 登录页面 -->
     <div id="loginPage" class="page hidden">
+        <button id="clearCacheBtn" class="btn btn-outline login-cache-btn" title="清除本机已保存的缓存数据">
+            <i class="fas fa-broom"></i> 清除缓存
+        </button>
         <div class="login-container">
             <div class="login-header">
                 <h1><i class="fab fa-bilibili"></i> BiliLive-Utility</h1>
@@ -88,6 +91,10 @@
                 <button id="refreshQr" class="btn btn-outline">
                     <i class="fas fa-refresh"></i> 刷新二维码
                 </button>
+                <div class="qr-alert">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>如果扫码登录过程中这个提示出现 <code>undefined</code>，请尝试点击右上角清除缓存并重启应用后重试。</p>
+                </div>
             </div>
         </div>
     </div>
@@ -332,6 +339,36 @@
                 </button>
                 <button id="updateIgnoreBtn" class="btn btn-secondary">
                     <i class="fas fa-eye-slash"></i> 忽略此版本
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 清除缓存确认弹窗 -->
+    <div id="clearCacheModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-broom"></i> 清除本地缓存</h2>
+                <button id="clearCacheModalClose" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="about-content">
+                    <div class="about-section">
+                        <p>此操作会清除本机已保存的缓存数据，包括：</p>
+                        <p>· 加密保存的登录凭据（Cookies 会话缓存）</p>
+                        <p>· 缓存的直播间号</p>
+                    </div>
+                    <div class="about-section">
+                        <p>清除后需要重启应用，并重新扫码登录。扫码登录时若提示出现 <code>undefined</code>，清除缓存并重启通常即可恢复正常。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="clearCacheCancelBtn" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> 取消
+                </button>
+                <button id="clearCacheConfirmBtn" class="btn btn-primary">
+                    <i class="fas fa-broom"></i> 确认清理
                 </button>
             </div>
         </div>

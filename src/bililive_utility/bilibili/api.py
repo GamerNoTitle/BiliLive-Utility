@@ -11,9 +11,17 @@ from .core import (
     APPKEY,
     APPSEC,
 )
-from ..context.path import CACHE_PATH
+from ..context.path import CACHE_PATH, LEGACY_CACHE_PATH
 
 _cached_room_id: Optional[str] = None
+
+
+def _room_id_file():
+    """返回当前可读取的 room_id 文件：优先新路径，其次旧版本的 v2 目录（只读，不迁移、不删除）"""
+    for path in (CACHE_PATH / "room_id", LEGACY_CACHE_PATH / "room_id"):
+        if path.exists():
+            return path
+    return None
 
 
 def get_cached_room_id() -> str:
@@ -21,8 +29,8 @@ def get_cached_room_id() -> str:
     global _cached_room_id
     if _cached_room_id is not None:
         return _cached_room_id
-    room_id_path = CACHE_PATH / "room_id"
-    if room_id_path.exists():
+    room_id_path = _room_id_file()
+    if room_id_path is not None:
         _cached_room_id = room_id_path.read_text().strip()
         return _cached_room_id
     return ""
@@ -32,6 +40,8 @@ def _persist_room_id(room_id: str):
     """写入 room_id 到文件并同步更新内存缓存"""
     global _cached_room_id
     _cached_room_id = room_id
+    # 缓存目录按需创建，不在程序启动时预先建目录
+    (CACHE_PATH / "room_id").parent.mkdir(parents=True, exist_ok=True)
     with open(CACHE_PATH / "room_id", "w") as f:
         f.write(room_id)
 
@@ -290,9 +300,10 @@ async def logout() -> bool:
     )
     if not await check_login_status():
         invalidate_room_id_cache()
-        session_path = CACHE_PATH / "session"
-        if session_path.exists():
-            session_path.unlink()
+        # 用户显式退出登录：新路径和旧版本 v2 目录里的会话文件都要清掉
+        for session_path in (CACHE_PATH / "session", LEGACY_CACHE_PATH / "session"):
+            if session_path.exists():
+                session_path.unlink()
         bili_client.cookies.clear()
         return True
     return False

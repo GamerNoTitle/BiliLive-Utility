@@ -2,15 +2,23 @@ import os
 import sys
 import platformdirs
 
+# 只声明路径，不在导入时创建任何目录：
+# 程序只用到缓存目录，且在真正写文件时才按需 mkdir，避免在用户磁盘上留下空壳目录。
 dirs = platformdirs.PlatformDirs(
     appname="BiliLive-Utility",
     appauthor="GamerNoTitle",
-    version="v2",
-    ensure_exists=True
 )
-SESSION_PATH = dirs.user_cache_path / "session"
+
 CACHE_PATH = dirs.user_cache_path
-DATA_PATH = dirs.user_data_path
+SESSION_PATH = CACHE_PATH / "session"
+
+# 旧版本曾在应用目录后再追加一个版本段（version="v2"），路径形如
+#   ~/Library/Caches/BiliLive-Utility/v2/session
+# 这个常量只用于「只读回退」：新路径没有文件时，去旧路径读一次，
+# 以保证老用户不必重新扫码登录。程序不会迁移、改写或删除旧目录里的任何内容，
+# 是否清理旧目录由用户自行决定。
+LEGACY_CACHE_PATH = CACHE_PATH / "v2"
+
 
 def get_resource_path() -> str:
     """

@@ -5,7 +5,7 @@ import atexit
 import logging
 from typing import Dict, Optional
 
-from ..context.path import SESSION_PATH
+from ..context.path import SESSION_PATH, LEGACY_CACHE_PATH
 from ..utils.crypto import encrypt_data, decrypt_data
 
 # --- 日志配置 ---
@@ -22,12 +22,17 @@ HEADERS: Dict[str, str] = {
 
 def load_cookies() -> Optional[Dict[str, str]]:
     """从缓存加载 Cookies 字典"""
-    if not SESSION_PATH.exists():
+    session_path = SESSION_PATH
+    if not session_path.exists() and (LEGACY_CACHE_PATH / "session").exists():
+        # 只读回退：老用户的凭据还在旧版本的 v2 目录里，读一次即可继续登录状态
+        session_path = LEGACY_CACHE_PATH / "session"
+
+    if not session_path.exists():
         return None
 
-    log.info(f"正在从缓存加载 Cookies: {SESSION_PATH}")
+    log.info(f"正在从缓存加载 Cookies: {session_path}")
     try:
-        with open(SESSION_PATH, "r") as f:
+        with open(session_path, "r") as f:
             encrypted = f.read()
         json_str = decrypt_data(encrypted)
         cookies = json.loads(json_str)
@@ -37,10 +42,10 @@ def load_cookies() -> Optional[Dict[str, str]]:
         log.warning("缓存文件格式不正确")
         return None
     except Exception as e:
+        # 解密失败时保留原文件：是否清理缓存由用户在界面上自行决定，程序不替用户删除数据
         log.warning(
             f"加载 Cookies 失败: {e}"
         )
-        SESSION_PATH.unlink()
         return None
 
 def save_cookies(client: httpx.AsyncClient):
@@ -49,6 +54,8 @@ def save_cookies(client: httpx.AsyncClient):
     try:
         cookies_dict = dict(client.cookies)
         encrypted = encrypt_data(json.dumps(cookies_dict))
+        # 缓存目录按需创建，不在程序启动时预先建目录
+        SESSION_PATH.parent.mkdir(parents=True, exist_ok=True)
         with open(SESSION_PATH, "w") as f:
             f.write(encrypted)
         log.info("Cookies 保存成功")
